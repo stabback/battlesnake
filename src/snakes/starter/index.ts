@@ -19,14 +19,14 @@ function handleIndex(request: Request, response: Response) {
 }
 
 function handleStart(request: Request, response: Response) {
-  var gameData = request.body
+  var GameState = request.body
 
   console.log('START')
   response.status(200).send('ok')
 }
 
 function handleMove(request: Request, response: Response) {
-  var gameData = request.body
+  var GameState = request.body
 
   var possibleMoves = ['up', 'down', 'left', 'right']
   var move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)]
@@ -38,7 +38,7 @@ function handleMove(request: Request, response: Response) {
 }
 
 function handleEnd(request: Request, response: Response) {
-  var gameData = request.body
+  var GameState = request.body
 
   console.log('END')
   response.status(200).send('ok')

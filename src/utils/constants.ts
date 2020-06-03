@@ -1,0 +1,1 @@
+export const moves: Move[] = ['up', 'down', 'left', 'right']

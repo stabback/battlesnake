@@ -1,4 +1,4 @@
-interface Game {
+interface GameData {
   id: string
   timeout: number
 }
@@ -8,7 +8,7 @@ interface Point {
   y: number
 }
 
-interface Snake {
+interface SnakeData {
   id: string
   name: string
   health: number
@@ -18,18 +18,18 @@ interface Snake {
   shout: string
 }
 
-interface Board {
+interface BoardData {
   height: number
   width: number
   food: Point[]
-  snakes: Snake[]
+  snakes: SnakeData[]
 }
 
 interface GameState {
-  game: Game
+  game: GameData
   turn: number
-  board: Board
-  you: Snake
+  board: BoardData
+  you: SnakeData
 }
 
 // Info

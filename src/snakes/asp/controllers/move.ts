@@ -1,47 +1,30 @@
 import { Request, Response } from "express"
+import Game from "../../../utils/Game"
+import shuffle from 'fast-shuffle'
+import { moves } from "../../../utils/constants"
+import strategies from '../strategies';
+
 
 function move(request: Request<{}, MoveResponse, GameState>, response: Response<MoveResponse>) {
   const gameState = request.body
 
-  var possibleMoves: Move[] = ['up', 'down', 'left', 'right']
+  const game = new Game(gameState)
 
-  const move = possibleMoves.find((move: Move) => isMoveSafe(gameState, move))
+  
+  let move: Move;
+  
+  let selectedStrategy = 'eat';
+  move = strategies.eat(game)
 
-  console.log('MOVE: ' + move)
+  if (!move) {
+    let selectedStrategy = 'random';
+    move = strategies.random(game)  
+  }
+
+  console.log('MOVE', move, selectedStrategy)
   response.status(200).send({
     move: move
   })
-}
-
-function isMoveSafe(gameState: GameState, move: Move) {
-  const head = gameState.you.head
-  let nextHead = { x: head.x, y: head.y }
-
-  switch (move) {
-    case 'up':
-      nextHead.y = nextHead.y - 1
-      break
-
-    case 'down':
-      nextHead.y = nextHead.y + 1
-      break
-
-    case 'left':
-      nextHead.x = nextHead.x - 1
-      break
-
-    case 'right':
-      nextHead.x = nextHead.x + 1
-      break
-  }
-
-  // Check to make sure the move stays on the board
-  if (nextHead.x > gameState.board.width) return false
-  if (nextHead.x < 1) return false
-  if (nextHead.y > gameState.board.height) return false
-  if (nextHead.y < 1) return false
-
-  return true
 }
 
 export default move
