@@ -1,6 +1,6 @@
-const bodyParser = require('body-parser')
-const express = require('express')
-const snakes = require('./snakes')
+import bodyParser from 'body-parser'
+import express from 'express'
+import snakes from './snakes'
 
 const PORT = process.env.PORT || 3000
 

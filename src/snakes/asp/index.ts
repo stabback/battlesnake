@@ -1,5 +1,5 @@
-const express = require('express')
-const controllers = require('./controllers')
+import express from 'express'
+import * as controllers from './controllers'
 
 const router = express.Router()
 
@@ -8,4 +8,4 @@ router.post('/start', controllers.start)
 router.post('/move', controllers.move)
 router.post('/end', controllers.end)
 
-module.exports = router
+export default router

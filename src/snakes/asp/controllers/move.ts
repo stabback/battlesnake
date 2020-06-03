@@ -1,9 +1,11 @@
-function move(request, response) {
-  var gameData = request.body
+import { Request, Response } from "express"
 
-  var possibleMoves = ['up', 'down', 'left', 'right']
+function move(request: Request<{}, MoveResponse, GameState>, response: Response<MoveResponse>) {
+  const gameState = request.body
 
-  const move = possibleMoves.find(move => isMoveSafe(gameData, move))
+  var possibleMoves: Move[] = ['up', 'down', 'left', 'right']
+
+  const move = possibleMoves.find((move: Move) => isMoveSafe(gameState, move))
 
   console.log('MOVE: ' + move)
   response.status(200).send({
@@ -11,8 +13,8 @@ function move(request, response) {
   })
 }
 
-function isMoveSafe(gameData, move) {
-  const head = gameData.you.head
+function isMoveSafe(gameState: GameState, move: Move) {
+  const head = gameState.you.head
   let nextHead = { x: head.x, y: head.y }
 
   switch (move) {
@@ -34,12 +36,12 @@ function isMoveSafe(gameData, move) {
   }
 
   // Check to make sure the move stays on the board
-  if (nextHead.x > gameData.board.width) return false
+  if (nextHead.x > gameState.board.width) return false
   if (nextHead.x < 1) return false
-  if (nextHead.y > gameData.board.height) return false
+  if (nextHead.y > gameState.board.height) return false
   if (nextHead.y < 1) return false
 
   return true
 }
 
-module.exports = move
+export default move

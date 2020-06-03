@@ -1,4 +1,4 @@
-const express = require('express')
+import express, { Response, Request } from 'express'
 
 const router = express.Router()
 
@@ -7,7 +7,7 @@ router.post('/start', handleStart)
 router.post('/move', handleMove)
 router.post('/end', handleEnd)
 
-function handleIndex(request, response) {
+function handleIndex(request: Request, response: Response) {
   var battlesnakeInfo = {
     apiversion: '1',
     author: '',
@@ -18,14 +18,14 @@ function handleIndex(request, response) {
   response.status(200).json(battlesnakeInfo)
 }
 
-function handleStart(request, response) {
+function handleStart(request: Request, response: Response) {
   var gameData = request.body
 
   console.log('START')
   response.status(200).send('ok')
 }
 
-function handleMove(request, response) {
+function handleMove(request: Request, response: Response) {
   var gameData = request.body
 
   var possibleMoves = ['up', 'down', 'left', 'right']
@@ -37,11 +37,11 @@ function handleMove(request, response) {
   })
 }
 
-function handleEnd(request, response) {
+function handleEnd(request: Request, response: Response) {
   var gameData = request.body
 
   console.log('END')
   response.status(200).send('ok')
 }
 
-module.exports = router
+export default router

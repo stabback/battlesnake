@@ -1,22 +1,38 @@
 {
-  "name": "starter-snake-node",
+  "name": "stabback-battlesnake",
   "version": "1.0.0",
-  "description": "A simple Battlesnake written in JavaScript for Node.js",
-  "main": "index.js",
+  "description": "A collection of my battlesnakes",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "build:watch": "tsc -w",
+    "serve": "node dist/server.js",
+    "serve:watch": "nodemon dist/server.js",
+    "dev": "concurrently 'npm run build:watch' 'npm run serve:watch' -n build,serve -c magenta,green",
+    "heroku": "npm run build && git push heroku master"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BattlesnakeOfficial/starter-snake-node.git"
+    "url": "git+https://github.com/stabback/battlesnake"
   },
-  "author": "BattlesnakeOfficial",
+  "author": "Josh Stabback",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/BattlesnakeOfficial/starter-snake-node/issues"
   },
-  "homepage": "https://github.com/BattlesnakeOfficial/starter-snake-node#readme",
   "dependencies": {
+    "@types/body-parser": "^1.19.0",
+    "@types/express": "^4.17.6",
+    "@types/node": "^14.0.9",
     "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "concurrently": "^5.2.0",
+    "nodemon": "^2.0.4",
+    "tslint": "^6.1.2",
+    "typescript": "^3.9.3"
+  },
+  "nodemonConfig": {
+    "delay": "250"
   }
 }

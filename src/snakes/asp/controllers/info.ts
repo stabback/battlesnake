@@ -1,4 +1,6 @@
-function info(request, response) {
+import { Request, Response } from "express"
+
+function info(request: Request, response: Response<InfoResponse>) {
   var battlesnakeInfo = {
     apiversion: '1',
     author: 'Josh Stabback',
@@ -6,7 +8,8 @@ function info(request, response) {
     head: 'default',
     tail: 'default'
   }
+
   response.status(200).json(battlesnakeInfo)
 }
 
-module.exports = info
+export default info
