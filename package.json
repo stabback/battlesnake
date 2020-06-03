@@ -4,12 +4,13 @@
   "description": "A collection of my battlesnakes",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc -w",
+    "build": "npm run clean && tsc",
+    "build:watch": "npm run clean && tsc -w",
     "serve": "node dist/server.js",
     "serve:watch": "nodemon dist/server.js",
     "dev": "concurrently 'npm run build:watch' 'npm run serve:watch' -n build,serve -c magenta,green",
-    "heroku": "npm run build && git push heroku master"
+    "heroku": "npm run build && git push heroku master",
+    "clean": "rimraf dist"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "concurrently": "^5.2.0",
     "nodemon": "^2.0.4",
+    "rimraf": "^3.0.2",
     "tslint": "^6.1.2",
     "typescript": "^3.9.3"
   },
