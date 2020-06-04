@@ -4,7 +4,7 @@ import applyMove from './apply-move';
 
 /**
  * Class which tracks the current state of the game.  Should not include snake
- * smart logic.  
+ * smart logic.
  */
 class Game {
   public id: string
@@ -21,7 +21,7 @@ class Game {
     this.player = new Snake(state.you)
   }
 
-  // Determines if a move will result in player death.  Does not look into the 
+  // Determines if a move will result in player death.  Does not look into the
   // future (to check for head collisions)
   isMoveSafe(move: Move): boolean {
     const updatedHead = applyMove(this.player.head, move)
@@ -33,7 +33,7 @@ class Game {
 
     // Make sure the point is not currently occupied
     if (this.board.isPointOccupied(updatedHead)) {
-      // TODO - Tail validation.  The point may be occupied by a tail that 
+      // TODO - Tail validation.  The point may be occupied by a tail that
       // may move.  It may stay in place if the snake is eating / has eaten
       return false;
     }

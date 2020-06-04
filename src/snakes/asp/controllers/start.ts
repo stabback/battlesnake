@@ -1,9 +1,11 @@
 import { Request, Response } from "express"
+import logger from "@/logger/logger"
 
 function start(request: Request<{}, string, GameState>, response: Response<string>) {
-  var GameState = request.body
+  const state = request.body
 
-  console.log('START')
+  logger.startGame(state);
+
   response.status(200).send('ok')
 }
 

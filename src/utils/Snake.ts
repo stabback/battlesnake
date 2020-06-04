@@ -21,7 +21,7 @@ class Snake implements SnakeData {
   possibleMoves(): Point[] {
     return moves
       .map(move => applyMove(this.head, move))
-      .filter(updatedHead => { 
+      .filter(updatedHead => {
         return !this.body.includes(updatedHead)
       })
   }

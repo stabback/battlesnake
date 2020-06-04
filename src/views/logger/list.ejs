@@ -1,0 +1,15 @@
+<%- include('partials/header', {title: 'Logs | List'}); %>
+<h1>List of games played</h1>
+
+<% if(games.length === 0) { %>
+  No games played yet!
+<% } else { %>
+    <ul>
+    <% games.forEach(function(game) { %>
+      <li><%= game.id %> <span><%= JSON.stringify(game) %></span></li>
+    <% }); %>
+  </ul>
+<% } %>
+
+
+<%- include('partials/footer'); %>

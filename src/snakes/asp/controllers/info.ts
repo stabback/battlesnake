@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 
 function info(request: Request, response: Response<InfoResponse>) {
-  var battlesnakeInfo = {
+  const battlesnakeInfo = {
     apiversion: '1',
     author: 'Josh Stabback',
     color: '#BADA55',

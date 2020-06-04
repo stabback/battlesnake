@@ -1,29 +1,38 @@
 import { Request, Response } from "express"
-import Game from "../../../utils/Game"
+import Game from "@/utils/Game"
 import shuffle from 'fast-shuffle'
-import { moves } from "../../../utils/constants"
-import strategies from '../strategies';
+import { moves } from "@/utils/constants"
+import strategies from '@/snakes/asp/strategies';
+import logger from "@/logger/logger"
 
 
 function move(request: Request<{}, MoveResponse, GameState>, response: Response<MoveResponse>) {
   const gameState = request.body
 
+  logger.startTurn(gameState)
+
   const game = new Game(gameState)
 
-  
-  let move: Move;
-  
-  let selectedStrategy = 'eat';
-  move = strategies.eat(game)
 
-  if (!move) {
-    let selectedStrategy = 'random';
-    move = strategies.random(game)  
+  let resolvedMove: Move;
+
+  logger.log(game, `[Move] Trying the eat strategy`)
+
+  resolvedMove = strategies.eat(game)
+
+  logger.log(game, `[Move] Eat strategy returned ${resolvedMove || 'null'}`)
+
+  if (!resolvedMove) {
+    logger.log(game, `[Move] Trying the random strategy`)
+    resolvedMove = strategies.random(game)
+    logger.log(game, `[Move] The random strategy returned ${resolvedMove}`)
+
   }
 
-  console.log('MOVE', move, selectedStrategy)
+  logger.endTurn(gameState, resolvedMove)
+
   response.status(200).send({
-    move: move
+    move: resolvedMove
   })
 }
 
