@@ -1,7 +1,7 @@
 import pathfinder, { DiagonalMovement } from 'pathfinding';
 
 
-import logger from "@/logger/logger";
+import logger from "@/logger/Logger";
 import Game from '@/utils/Game';
 
 

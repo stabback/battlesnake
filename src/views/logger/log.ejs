@@ -1,0 +1,36 @@
+<%- include('partials/header', {title: 'Logs | List'}); %>
+
+<h1>Game <%= game.id %></h1>
+<nav>
+  <ul>
+    <li><a href="/logs">Back to list</a></li>
+    <li><a href="https://play.battlesnake.com/g/<%= game.id %>/">View on Battlesnake.com</a></li>
+  </ul>
+</nav>
+
+
+<dl>
+  <dt>Snake name</dt>
+  <dd><%= game.startingState.you.name %></dd>
+  <dt>Started</dt>
+  <dd><%= game.start %></dd>
+  <dt>Ended</dt>
+  <dd><%= game.end %></dd>
+  <dt>Length</dt>
+  <dd><%= Math.round((game.end - game.start) / 1000) %> seconds</dd>
+  <dt>Turns played by us</dt>
+  <dd><%= game.turns.length %></dd>
+  <dt>Turns total</dt>
+  <dd><%= game.endingState.turn %></dd>
+  <dt>Won?</dt>
+  <dd><%= (game.startingState.you.id === game.endingState.board.snakes[0].id) ? 'yes' : 'no' %></dd>
+</dl>
+
+<h2>Turns</h2>
+<ol start="0">
+  <% game.turns.forEach((turn, turnNumber) => { %>
+    <li><a href="/logs/<%= game.id %>/<%= turnNumber %>"><%= turn.move %></a></li>
+  <% }) %>
+</ol>
+
+<%- include('partials/footer'); %>

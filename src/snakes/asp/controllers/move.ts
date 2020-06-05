@@ -3,7 +3,7 @@ import Game from "@/utils/Game"
 import shuffle from 'fast-shuffle'
 import { moves } from "@/utils/constants"
 import strategies from '@/snakes/asp/strategies';
-import logger from "@/logger/logger"
+import logger from "@/logger/Logger"
 
 
 function move(request: Request<{}, MoveResponse, GameState>, response: Response<MoveResponse>) {

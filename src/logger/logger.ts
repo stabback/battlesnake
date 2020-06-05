@@ -32,8 +32,27 @@ interface GameLog {
   turns: TurnLog[]
 }
 
-class Logger {
+class LoggerClass {
   games: GameLog[] = []
+
+  async restore() {
+    console.log("Restoring logs...");
+    // Read in any existing game logs
+    const query = datastore
+      .createQuery('gameLog')
+      .order('start', {
+        descending: false
+      })
+      .limit(10)
+
+    const res = (await datastore.runQuery(query))[0]
+    if (res) {
+      this.games = res.map(log => log.game)
+      console.log("Restored", this.games.length, 'logs')
+    } else {
+      console.warn("Did not restore any logs")
+    }
+  }
 
   getGameLog(gameId: string): GameLog {
     return this.games.find(game => game.id === gameId)
@@ -67,7 +86,7 @@ class Logger {
       game.endingState = state
     }
 
-    this.save();
+    this.saveGameLog(game);
   }
 
   startTurn(state: GameState) {
@@ -102,12 +121,14 @@ class Logger {
     turnLog.messages.push(turnLogMessage as TurnLogMessage)
   }
 
-  save() {
-    const key = datastore.key(['game'])
-    datastore.save({ key, data: { games: this.games } });
+  async saveGameLog(game: GameLog) {
+    console.log("Saving the game log...")
+    const key = datastore.key(['gameLog', game.id])
+    const result = await datastore.save({ key, data: { game, start: game.start } });
+    console.log("Saved!", result)
   }
 }
 
-const logger = new Logger()
+const Logger = new LoggerClass()
 
-export default logger
+export default Logger

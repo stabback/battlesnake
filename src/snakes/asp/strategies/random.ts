@@ -1,7 +1,7 @@
 import Game from "@/utils/Game";
 import shuffle from "fast-shuffle";
 import { moves } from "@/utils/constants";
-import logger from "@/logger/logger";
+import logger from "@/logger/Logger";
 
 function random(game: Game) {
   logger.log(game, `[Random] Starting the random strategy`)

@@ -11,9 +11,8 @@ npm run dev
 
 This compiles and serves your snakes locally.
 
-## Pushing to Heroku
+## Pushing to gcloud
 
 ```sh
-npm run heroku
+gcloud deploy
 ```
-

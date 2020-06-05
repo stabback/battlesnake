@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import logger from "@/logger/logger"
+import logger from "@/logger/Logger"
 
 function start(request: Request<{}, string, GameState>, response: Response<string>) {
   const state = request.body

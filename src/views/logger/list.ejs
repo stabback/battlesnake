@@ -6,7 +6,7 @@
 <% } else { %>
     <ul>
     <% games.forEach(function(game) { %>
-      <li><%= game.id %> <span><%= JSON.stringify(game) %></span></li>
+      <li><a href='logs/<%=game.id%>'><%= game.id %></a></li>
     <% }); %>
   </ul>
 <% } %>
