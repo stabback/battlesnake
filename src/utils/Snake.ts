@@ -15,35 +15,28 @@ class Snake implements SnakeData {
     Object.assign(this, data)
   }
 
-  /**
-   * Determines if the snake is currently intersecting the provided point
-   */
-  intersectsPoint(point: Point): boolean {
-    return this.body.some(bodyPoint => isSamePoint(bodyPoint, point))
-  }
+  intersects(point: Point, includeTail = true, includePossibleMoves = true): boolean {
+    const segments = [];
 
-  /**
-   * Determines if a snake for sure will guaranteed be intersecting the provided point next turn.
-   * Important - the snake may still intersect this point even if this returns false, such as if the
-   * tail is growing due to eating or the head moving to the position.
-   */
-  willIntersectPoint(point: Point): boolean {
-    const futureBody = this.body.slice(0, this.body.length - 1);
-    return futureBody.some(bodyPoint => isSamePoint(bodyPoint, point))
-  }
+    segments.push(...this.body.slice(0, this.body.length - 1))
 
-  /**
-   * Determines if a snake may intersect the provided point.
-   */
-  mayIntersectPoint(point: Point): boolean {
-    return [...this.body, ...this.possibleNextHeadPositions].some(bodyPoint => isSamePoint(bodyPoint, point))
+    if (includeTail) {
+      segments.push(this.body[this.body.length - 1])
+    }
+
+    if (includePossibleMoves) {
+      segments.push(...this.possibleNextHeadPositions)
+    }
+
+    return segments.some(segment => isSamePoint(segment, point))
+
   }
 
   get possibleNextHeadPositions(): Point[] {
     return moves
       .map(move => applyMove(this.head, move))
       .filter(updatedHead => {
-        return !this.intersectsPoint(updatedHead)
+        return !this.body.some(segment => isSamePoint(segment, updatedHead))
       })
   }
 }

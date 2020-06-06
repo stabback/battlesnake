@@ -40,19 +40,15 @@ class Game {
   }
 
   isMoveMaybeSafe(move: Move): boolean {
-    const updatedHead = applyMove(this.player.head, move)
+    const point = applyMove(this.player.head, move)
 
     // Make sure the point is in the board
-    if (!this.board.isPointOnBoard(updatedHead)) {
+    if (!this.board.isPointOnBoard(point)) {
       return false;
     }
 
     // Make sure the point is not currently occupied
-    if (this.board.isPointOccupied(updatedHead)) {
-      return false;
-    }
-
-    return true;
+    return !this.board.snakes.some(snake => snake.intersects(point, false, false))
   }
 }
 

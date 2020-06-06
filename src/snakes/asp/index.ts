@@ -1,3 +1,7 @@
+// TODO Determine if a snake is growing and avoid the tail
+// TODO Attack strategy
+// TODO Survive strategy
+
 import express from 'express'
 import * as controllers from './controllers'
 

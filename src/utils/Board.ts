@@ -51,19 +51,15 @@ class Board {
     return true;
   }
 
-  isPointOccupied(point: Point): boolean {
-    return this.snakes.some(snake => snake.intersectsPoint(point))
-  }
-
   isPointSafe(point: Point, youId: string): boolean {
     const you = this.snakes.find(snake => snake.id === youId);
-    if (you.willIntersectPoint(point)) return false;
+    if (you.intersects(point,false,false)) return false;
 
     const smallerSnakes = this.enemySnakes.filter(snake => snake.body.length < you.body.length);
-    if (smallerSnakes.some(snake => snake.willIntersectPoint(point))) return false;
+    if (smallerSnakes.some(snake => snake.intersects(point, true, false))) return false;
 
     const threatSnakes = this.enemySnakes.filter(snake => snake.body.length >= you.body.length);
-    if (threatSnakes.some(snake => snake.mayIntersectPoint(point))) return false;
+    if (threatSnakes.some(snake => snake.intersects(point, true, true))) return false;
 
     return true;
   }
