@@ -16,9 +16,18 @@ function eat(game: Game): Move | null {
   // Setup the grid for the pathfinding library
   const grid = new pathfinder.Grid(game.board.width, game.board.height);
 
-  game.board.snakes.forEach(snake => snake.body.forEach(point => {
-    grid.setWalkableAt(point.x, point.y, false)
-  }));
+  game.board.points.forEach(point => {
+    grid.setWalkableAt(point.x, point.y, point.safe)
+  });
+
+  logger.log(game, {
+    message: '[Eat] Logging threatening spots',
+    points: game.board.points.filter(point => !point.safe).map(point => ({
+      x: point.x,
+      y: point.y,
+      color: 'orange'
+    }))
+  });
 
   grid.setWalkableAt(game.player.head.x, game.player.head.y, true);
 
@@ -32,7 +41,7 @@ function eat(game: Game): Move | null {
     const thisGrid = grid.clone();
 
     return finder.findPath(game.player.head.x, game.player.head.y, food.x, food.y, thisGrid);
-  }).filter(path => path)
+  }).filter(path => path && path.length)
 
   if (!paths || paths.length === 0) {
     logger.log(game, `Could not find any paths to any food`)
@@ -52,7 +61,7 @@ function eat(game: Game): Move | null {
   const nextPoint = selectedPath[1];
 
   logger.log(game, {
-    message: '[Eat] Selected path',
+    message: '[Eat] Selected path marked on grid',
     points: selectedPath.map(pathItem => ({
       x: pathItem[0],
       y: pathItem[1],
@@ -69,9 +78,11 @@ function eat(game: Game): Move | null {
   const [nextX, nextY] = nextPoint;
 
   logger.log(game, {
-    message: '[Eat] Next point to move to',
+    message: '[Eat] Next point to move to marked on grid',
     points: [{ x: nextX, y: nextY, color: 'blue', message: 'Next point' }]
   })
+
+  logger.log(game, `[Eat] we are at ${JSON.stringify(game.player.head)} moving to ${JSON.stringify({x: nextX, y: nextY})}`)
 
   if (nextX > game.player.head.x) {
     return 'right'
@@ -85,7 +96,7 @@ function eat(game: Game): Move | null {
     return 'down'
   }
 
-  if (nextX < game.player.head.y) {
+  if (nextY > game.player.head.y) {
     return 'up'
   }
 

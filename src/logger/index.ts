@@ -5,14 +5,8 @@ const router = express.Router()
 
 router.get('/', async (req, res) => {
 
-  const games = logger.games.map(game => ({
-    id: game.id,
-    start: game.start,
-    won: game.endingState.board.snakes[0].id === game.endingState.you.id
-  }))
-
   res.render('logger/list', {
-    games
+    games: logger.games
   })
 
 })
@@ -24,8 +18,20 @@ router.get('/:gameId', async (req: Request<{gameId: string}>, res) => {
     res.status(404).send('Log does not exist')
   }
 
-  res.render('logger/log', {
+  res.render('logger/game-log', {
     game
+  })
+})
+
+router.get('/:gameId/:turnNumber', async (req: Request<{gameId: string, turnNumber: string}>, res) => {
+  const log = logger.getTurnLog(req.params.gameId, parseInt(req.params.turnNumber, 10))
+
+  if (!log) {
+    res.status(404).send('Log does not exist')
+  }
+
+  res.render('logger/turn-log', {
+    log
   })
 })
 

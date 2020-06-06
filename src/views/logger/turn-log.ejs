@@ -1,0 +1,162 @@
+<%- include('partials/header', {title: 'Logs | List'}); %>
+
+<%
+const emptyGrid = Array.from(Array(log.state.board.height), () => Array(log.state.board.width).fill(null))
+
+const grid = emptyGrid.map(row => row.map(cell => ({log: []})))
+
+String.prototype.toHex = function() {
+    var hash = 0;
+    if (this.length === 0) return hash;
+    for (var i = 0; i < this.length; i++) {
+        hash = this.charCodeAt(i) + ((hash << 5) - hash);
+        hash = hash & hash;
+    }
+    var color = '#';
+    for (var i = 0; i < 3; i++) {
+        var value = (hash >> (i * 8)) & 255;
+        color += ('00' + value.toString(16)).substr(-2);
+    }
+    return color;
+}
+
+log.state.board.food.forEach(food => grid[food.y][food.x].class = 'food')
+
+log.state.board.snakes.forEach(snake => {
+  snakeColor = snake.name.toHex()
+  snake.body.forEach((segment, index) => grid[segment.y][segment.x] = {
+    ...grid[segment.y][segment.x],
+    class: 'snake-body',
+    style: 'background-color: ' + snakeColor,
+    content: index
+  })
+  grid[snake.head.y][snake.head.x] = {
+    ...grid[snake.head.y][snake.head.x],
+    class: 'snake-head',
+    style: 'background-color: ' + snakeColor
+  }
+})
+
+log.messages.forEach((item, index) => {
+  if(item.points) {
+    item.points.forEach(point => {
+      grid[point.y][point.x].log.push({
+        index,
+        message: point.message,
+        color: point.color
+      })
+    })
+  }
+})
+
+%>
+
+<style>
+
+  #snake-grid tbody{
+    border: 1px solid #AAA;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  
+  #snake-grid tr{
+    display: flex;
+  }
+  
+  
+  
+  #snake-grid td{
+    position: relative;
+    border: 1px solid #AAA;
+    height: 60px;
+    width: 60px;
+    overflow: hidden;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .snake-head::before {
+    content: '◉';
+  }
+  
+  .food::before {
+    content: '🍎';
+  }
+
+  .coords {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    font-size: 10px;
+  }
+
+  .log-points {
+    position: absolute;
+    bottom: 1px;
+    left: 1px;
+    display: flex;
+    flex-direction: row;
+    font-size: 10px;
+  }
+  
+</style>
+
+
+<%# Top Meta Data %>
+
+<h1>Turn <%= log.state.turn %> | Game <%= log.state.game.id %></h1>
+<nav>
+  <ul>
+    <li><a href="/logs">Back to list</a></li>
+    <li><a href="/logs/<%= log.state.game.id %>">Back to game</a></li>
+    <li><a href="https://play.battlesnake.com/g/<%= log.state.game.id %>/">View game Battlesnake.com</a></li>
+  </ul>
+</nav>
+
+
+<%# Grid %>
+<h2>Grid Replica</h2>
+
+<h3>Players</h3>
+<ul>
+  <% log.state.board.snakes.forEach(snake => { %>
+    <li style="border: 2px solid <%= snake.name.toHex() %>"><%= snake.name %></li>
+  <% }) %>
+</ul>
+
+<a href="/logs/<%= log.state.game.id %>/<%= log.state.turn - 1 %>">Prev turn</a>| <a href="/logs/<%= log.state.game.id %>/<%= log.state.turn + 1 %>">Next turn</a>
+
+<table id="snake-grid">
+  <tbody>
+    <% grid.forEach((row, rowIndex) => { %>
+      <tr>
+        <% row.forEach((cell, cellIndex) => { %>
+          
+            <td style="<%= cell.style %>" class="<%= cell.class %>">
+              <span class="coords"><%= cellIndex %>, <%= rowIndex %></span>
+              <%= cell.content %>
+              <div class="log-points">
+                <% cell.log.forEach(item => { %>
+                  <span class='log-point' title="<%= item.message %>" style="background: <%= item.color %>">[<%= item.index %>]</span>
+                <% }) %>
+              </div>
+            </td>
+
+        <% }) %>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<%# Messages %>
+<h2>Messages</h2>
+<ol start="0">
+  <% log.messages.forEach(item => { %>
+    <li><%= item.message %></li>
+  <% }) %>
+</ol>
+
+
+<%- include('partials/footer'); %>

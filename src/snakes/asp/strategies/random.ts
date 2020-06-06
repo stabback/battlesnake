@@ -10,16 +10,24 @@ function random(game: Game) {
 
   logger.log(game, `[Random] Trying moves in this order: ${shuffledMoves}`)
 
-  const move = shuffledMoves.find((m: Move) => {
+  let move = shuffledMoves.find((m: Move) => {
     // Make sure we're not running into anything known
     return game.isMoveSafe(m)
   })
 
-  logger.log(game, `[Random] Resolved to ${move || 'nothing!'}`)
-
   // Uh oh, we are probably dead
   if (!move) {
-    logger.log(game, `[Random] Defaulting to  ${shuffledMoves[0]}`)
+    logger.log(game, '[Random] No guaranteed safe random move!')
+
+    move = shuffledMoves.find((m: Move) => {
+      return game.isMoveMaybeSafe(move)
+    })
+  }
+
+  logger.log(game, `[Random] Resolved to ${move || 'nothing!'}`)
+
+  if(!move) {
+    logger.log(game, `[Random] No safe spots at all!  We're gunna die!  ${shuffledMoves[0]}`)
     return shuffledMoves[0]
   }
 

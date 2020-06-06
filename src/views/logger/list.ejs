@@ -4,10 +4,29 @@
 <% if(games.length === 0) { %>
   No games played yet!
 <% } else { %>
-    <ul>
-    <% games.forEach(function(game) { %>
-      <li><a href='logs/<%=game.id%>'><%= game.id %></a></li>
-    <% }); %>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th><th>Date played</th><th>Snake name</th><th>Turns</th><th>Won?</th><th>Game link</th><th>First turn link</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% games.forEach(function(game) { %>
+        <tr>
+          <td><%= game.id %></td>
+          <td><%= game.start %></td>
+          <td><%= game.startingState.you.name %></td>
+          <td><%= game.endingState.turn %></td>
+          <td><%= (game.startingState.you.id === game.endingState.board.snakes[0].id) ? 'yes!' : 'no' %></td>
+          <td><a href='logs/<%=game.id%>'>Overview</a></td>
+          <td><a href='logs/<%=game.id%>/0'>First turn</a></td>
+        </tr>
+      <% }); %>
+    </tbody>
+
+  </table>
+
   </ul>
 <% } %>
 

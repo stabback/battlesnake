@@ -10,9 +10,10 @@
     "lint": "tslint -c tslint.json -p tsconfig.json --fix",
     "tsc": "tsc",
     "build": "npm-run-all clean lint tsc copy-assets",
-    "dev:start": "npm-run-all build start",
+    "dev:start": "npm-run-all build --parallel start",
     "dev": "nodemon --watch src -e ts,ejs --exec npm run dev:start",
-    "start": "node ."
+    "start": "node .",
+    "ngrok": "ngrok http -subdomain=stabback 3000"
   },
   "repository": {
     "type": "git",

@@ -6,7 +6,7 @@ const datastore = new Datastore();
 import Game from '@/utils/Game';
 interface PointLog extends Point {
   color: string
-  message: string
+  message?: string
 }
 
 interface TurnLogMessage {
@@ -41,7 +41,7 @@ class LoggerClass {
     const query = datastore
       .createQuery('gameLog')
       .order('start', {
-        descending: false
+        descending: true
       })
       .limit(10)
 
