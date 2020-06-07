@@ -1,7 +1,9 @@
-import random from './random';
+import attack from './attack';
 import eat from './eat';
+import random from './random';
 
 export default {
-  random,
-  eat
+  attack,
+  eat,
+  random
 }

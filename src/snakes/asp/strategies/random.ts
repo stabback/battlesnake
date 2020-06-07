@@ -20,7 +20,7 @@ function random(game: Game) {
     logger.log(game, '[Random] No guaranteed safe random move!')
 
     move = shuffledMoves.find((m: Move) => {
-      return game.isMoveMaybeSafe(move)
+      return game.isMoveMaybeSafe(m)
     })
   }
 

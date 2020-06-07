@@ -11,7 +11,7 @@ class Snake implements SnakeData {
   public length: number;
   public shout: string;
 
-  constructor(data: SnakeData) {
+  constructor(data: SnakeData, private height: number, private width: number) {
     Object.assign(this, data)
   }
 
@@ -35,6 +35,14 @@ class Snake implements SnakeData {
   get possibleNextHeadPositions(): Point[] {
     return moves
       .map(move => applyMove(this.head, move))
+      .filter(updatedHead => {
+        return (
+          updatedHead.x >= 0 &&
+          updatedHead.y >= 0 &&
+          updatedHead.x < this.width &&
+          updatedHead.y < this.height
+        )
+      })
       .filter(updatedHead => {
         return !this.body.some(segment => isSamePoint(segment, updatedHead))
       })

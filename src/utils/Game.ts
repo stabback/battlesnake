@@ -18,7 +18,7 @@ class Game {
     this.id = state.game.id;
     this.timeout = state.game.timeout;
     this.board = new Board(state.board, state.you.id)
-    this.player = new Snake(state.you)
+    this.player = new Snake(state.you, this.board.height, this.board.width)
   }
 
   // Determines if a move will result in player death.  Does not look into the

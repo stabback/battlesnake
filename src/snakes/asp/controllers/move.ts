@@ -16,11 +16,37 @@ function move(request: Request<{}, MoveResponse, GameState>, response: Response<
 
   let resolvedMove: Move;
 
-  logger.log(game, `[Move] Trying the eat strategy`)
+  logger.log(game, `[Move] Determining which strategy to use`)
 
-  resolvedMove = strategies.eat(game)
+  if (!resolvedMove) {
+    logger.log(game, `[Move] Trying the attack strategy`)
+    const biggestEnemy = game.board.enemySnakes.sort((a, b) => b.body.length - a.body.length)[0];
+    logger.log(game, {
+      message: `[Move] Biggest enemy is ${biggestEnemy.name} ${biggestEnemy.body.length}`,
+      points: [{
+        ...biggestEnemy.head,
+        color: 'hotpink'
+      }]
+    })
 
-  logger.log(game, `[Move] Eat strategy returned ${resolvedMove || 'null'}`)
+    if (game.player.body.length >= (biggestEnemy.body.length + 2)) {
+      logger.log(game, '[Move] We are bigger, attack!')
+      resolvedMove = strategies.attack(game)
+      logger.log(game, '[Move] Attack strategy resolved to ' + resolvedMove)
+    } else {
+      logger.log(game, '[Move] Size threshold not met, do not attack')
+    }
+  }
+
+
+  if (!resolvedMove) {
+    logger.log(game, `[Move] Trying the eat strategy`)
+
+    resolvedMove = strategies.eat(game)
+
+    logger.log(game, `[Move] Eat strategy returned ${resolvedMove || 'null'}`)
+  }
+
 
   if (!resolvedMove) {
     logger.log(game, `[Move] Trying the random strategy`)

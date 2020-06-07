@@ -53,6 +53,10 @@ log.messages.forEach((item, index) => {
 
 <style>
 
+  #replay-wrapper {
+    display: flex;
+  }
+
   #snake-grid tbody{
     border: 1px solid #AAA;
     display: flex;
@@ -115,48 +119,60 @@ log.messages.forEach((item, index) => {
   </ul>
 </nav>
 
+<div id="replay-wrapper">
 
-<%# Grid %>
-<h2>Grid Replica</h2>
+  <div id="grid-wrapper">
+    <%# Grid %>
+    <h2>Grid Replica</h2>
 
-<h3>Players</h3>
-<ul>
-  <% log.state.board.snakes.forEach(snake => { %>
-    <li style="border: 2px solid <%= snake.name.toHex() %>"><%= snake.name %></li>
-  <% }) %>
-</ul>
+    <h3>Players</h3>
+    <ul>
+      <% log.state.board.snakes.forEach(snake => { %>
+        <li style="border: 2px solid <%= snake.name.toHex() %>"><%= snake.name %></li>
+      <% }) %>
+    </ul>
 
-<a href="/logs/<%= log.state.game.id %>/<%= log.state.turn - 1 %>">Prev turn</a>| <a href="/logs/<%= log.state.game.id %>/<%= log.state.turn + 1 %>">Next turn</a>
+    <a href="/logs/<%= log.state.game.id %>/<%= log.state.turn - 1 %>">Prev turn</a>| <a href="/logs/<%= log.state.game.id %>/<%= log.state.turn + 1 %>">Next turn</a>
 
-<table id="snake-grid">
-  <tbody>
-    <% grid.forEach((row, rowIndex) => { %>
-      <tr>
-        <% row.forEach((cell, cellIndex) => { %>
-          
-            <td style="<%= cell.style %>" class="<%= cell.class %>">
-              <span class="coords"><%= cellIndex %>, <%= rowIndex %></span>
-              <%= cell.content %>
-              <div class="log-points">
-                <% cell.log.forEach(item => { %>
-                  <span class='log-point' title="<%= item.message %>" style="background: <%= item.color %>">[<%= item.index %>]</span>
-                <% }) %>
-              </div>
-            </td>
+    <table id="snake-grid">
+      <tbody>
+        <% grid.forEach((row, rowIndex) => { %>
+          <tr>
+            <% row.forEach((cell, cellIndex) => { %>
+              
+                <td style="<%= cell.style %>" class="<%= cell.class %>">
+                  <span class="coords"><%= cellIndex %>, <%= rowIndex %></span>
+                  <%= cell.content %>
+                  <div class="log-points">
+                    <% cell.log.forEach(item => { %>
+                      <span class='log-point' title="<%= item.message %>" style="background: <%= item.color %>">[<%= item.index %>]</span>
+                    <% }) %>
+                  </div>
+                </td>
 
+            <% }) %>
+          </tr>
         <% }) %>
-      </tr>
-    <% }) %>
-  </tbody>
-</table>
+      </tbody>
+    </table>
+  </div>
 
-<%# Messages %>
-<h2>Messages</h2>
-<ol start="0">
-  <% log.messages.forEach(item => { %>
-    <li><%= item.message %></li>
-  <% }) %>
-</ol>
+  <div id="message-wrapper">
 
+    <%# Messages %>
+    <h2>Messages</h2>
+    <ol start="0">
+      <% log.messages.forEach(item => { %>
+        <li>
+          <%= item.message %>
+          <% item.points && item.points.forEach(point => { %>
+            <span style="color: <%= point.color %>">•</span>
+          <% }) %>
+        </li>
+      <% }) %>
+    </ol>
+
+  </div>
+</div>
 
 <%- include('partials/footer'); %>

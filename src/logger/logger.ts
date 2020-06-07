@@ -68,7 +68,7 @@ class LoggerClass {
   startGame(state: GameState) {
     console.log(state.game.id, "START")
 
-    this.games.push({
+    this.games.unshift({
       id: state.game.id,
       start: new Date(),
       startingState: state,
