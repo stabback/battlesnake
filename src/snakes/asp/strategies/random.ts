@@ -1,4 +1,4 @@
-import Game from "@/utils/Game";
+import Game from "@/snakes/asp/classes/Game";
 import shuffle from "fast-shuffle";
 import { moves } from "@/utils/constants";
 import logger from "@/logger/Logger";

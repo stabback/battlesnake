@@ -1,6 +1,6 @@
 import Board from "./Board"
-import Snake from "./Snake"
-import applyMove from './apply-move';
+import Snake from "@/snakes/asp/classes/Snake"
+import applyMove from '@/utils/apply-move';
 
 /**
  * Class which tracks the current state of the game.  Should not include snake

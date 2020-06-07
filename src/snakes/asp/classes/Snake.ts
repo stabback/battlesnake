@@ -1,6 +1,6 @@
-import { moves } from "./constants";
-import applyMove from './apply-move';
-import isSamePoint from "./is-same-point";
+import { moves } from "@/utils/constants";
+import applyMove from '@/utils/apply-move';
+import isSamePoint from "@/utils/is-same-point";
 
 class Snake implements SnakeData {
   public id: string;

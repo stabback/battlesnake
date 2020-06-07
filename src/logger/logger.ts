@@ -3,7 +3,7 @@ import { Datastore } from '@google-cloud/datastore'
 
 const datastore = new Datastore();
 
-import Game from '@/utils/Game';
+import Game from '@/snakes/asp/classes/Game';
 interface PointLog extends Point {
   color: string
   message?: string

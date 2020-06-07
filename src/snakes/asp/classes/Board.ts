@@ -1,4 +1,4 @@
-import Snake from "./Snake";
+import Snake from "@/snakes/asp/classes/Snake";
 import Logger from '@/logger/Logger';
 
 interface DescribedPoint extends Point {
