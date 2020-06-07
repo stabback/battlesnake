@@ -74,6 +74,8 @@ class LoggerClass {
       startingState: state,
       turns: []
     })
+
+    this.games.pop();
   }
 
   endGame(state: GameState) {
