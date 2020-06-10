@@ -1,5 +1,6 @@
-import Snake from "@/snakes/asp/classes/Snake";
+import Snake from "@/classes/Snake";
 import Logger from '@/logger/Logger';
+import isPointOnBoard from "@/utils/is-point-on-board";
 
 interface DescribedPoint extends Point {
   safe: boolean
@@ -43,12 +44,7 @@ class Board {
 
 
   isPointOnBoard(point: Point): boolean {
-    if (point.x < 0 || point.y < 0) return false;
-
-    if (point.x > (this.width - 1)) return false;
-    if (point.y > (this.height - 1)) return false;
-
-    return true;
+    return isPointOnBoard(point, this.height, this.width)
   }
 
   isPointSafe(point: Point, youId: string): boolean {

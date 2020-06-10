@@ -125,6 +125,10 @@ class LoggerClass {
 
   async saveGameLog(game: GameLog) {
     console.log("Saving the game log...")
+    if (!game) {
+      console.error("-- NO GAME?")
+      return;
+    }
     const key = datastore.key(['gameLog', game.id])
     const result = await datastore.save({ key, data: { game, start: game.start } });
     console.log("Saved!", result)

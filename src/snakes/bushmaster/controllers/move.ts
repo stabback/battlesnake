@@ -1,112 +1,104 @@
 import { Request, Response } from "express"
-import Game from "@/snakes/asp/classes/Game"
-import shuffle from 'fast-shuffle'
-import { moves } from "@/utils/constants"
-import strategies from '@/snakes/asp/strategies';
-import logger from "@/logger/Logger"
+import Scenario from "../classes/Scenario"
+import Snake from "@/classes/Snake"
+import riskProfiles from "../constants/risk-profiles";
+import getMoveFromPoints from "@/utils/get-move-from-points";
 
+const MAX_EXECUTION_TIME = 300;
 
 function move(request: Request<{}, MoveResponse, GameState>, response: Response<MoveResponse>) {
-  // const startRunTime = new Date().getTime();
+  const startTime = new Date().getTime();
 
-  // const game = new Game(request.body);
+  const game = request.body
+  const player = new Snake(game.you, game.board.height, game.board.width);
+  const enemies = game.board.snakes.filter(snake => snake.id !== player.id).map(snake => new Snake(snake, game.board.height, game.board.width));
 
-  // const maxRunTime = 450;
-  // let move;
-  // const state: SimpleGameState = {
-  //   food: game.board.food,
-  //   snakes: game.board.snakes.map(({head, body, id}) => ({
-  //     head, body, id
-  //   }))
-  // }
+  const rootScenario = new Scenario(
+    game.board.width,
+    game.board.height,
+    player,
+    enemies,
+    game.board.food,
+    riskProfiles.normal,
+    { killBonus: false, ate: [], age: 0 }
+  )
 
-  // while (
-  //   !move &&
-  //   (new Date().getTime()) - startRunTime < maxRunTime
-  // ) {
+  rootScenario.createChildren();
 
-  // }
+  let resolvedMove: Move;
 
-  // Get all possible moves
-  // If only one move, return that move.
-  // For every move
-  // Get a list of all enemy moves
-  // For every combination of moves
-  // Recurse in.  Try 4 levels deep
+  // If no moves are possible, bail
+  if (rootScenario.children.length === 0) {
+    console.log("No valid moves!  Ahh!")
+    resolvedMove = 'up'
 
-  // For every combination of moves
-  // Score the moves
-  // Choose the best score
-  // Return that value
+  // If there is only one move possible, just do it
+  } else if (rootScenario.children.length === 1) {
+    console.log("Only one valid move, not predicting anything")
+    resolvedMove = getMoveFromPoints(game.you.head, rootScenario.children[0].player.head)
+
+  // Explore all possible scenarios and go for the best one
+  } else {
+    let queue: Scenario[] = [rootScenario];
+    let createdScenarios = 1;
+
+    do {
+      const scenario = queue.shift();
+
+      scenario.createChildren();
+
+      if (scenario.children && scenario.children.length > 0) {
+        queue = [...queue, ...scenario.children].filter(s => s)
+      }
+
+      createdScenarios = createdScenarios + 1;
+
+    } while( queue.length > 0 && (new Date().getTime() - startTime) < MAX_EXECUTION_TIME )
+
+    console.log("Explored", createdScenarios, "scenarios");
+
+    // Score each scenario and determine its move
+    const scenarios = rootScenario.children
+      .filter(scenario => scenario.player)
+      .map(scenario => {
+        return {
+          move: getMoveFromPoints(game.you.head, scenario.player.head),
+          outcome: scenario.outcome
+        }
+      })
+
+    console.log("SCENARIOS", scenarios)
+
+    if (scenarios.length === 0) {
+      console.log("We don't survive any of the scenarios, returning up")
+      resolvedMove = 'up'
+    } else {
+      const moves = scenarios
+      .reduce((acc, scenario) => {
+        return {
+          ...acc,
+          [scenario.move]: [...acc[scenario.move], scenario.outcome]
+        }
+      }, { up: [], down: [], left: [], right: [] })
+
+      const sortedMoves = Object.entries(moves)
+        .filter(([m, outcomes]) => outcomes && outcomes.length > 0)
+        .map(([m, outcomes]: [Move, number[]]) => {
+          const averageOutcome = outcomes.reduce((acc, outcome) => outcome + acc, 0) / outcomes.length
+          return { move: m, outcome: averageOutcome }
+        }).sort((a, b) => b.outcome - a.outcome)
+
+      resolvedMove = sortedMoves[0].move
+
+      console.log("Moves", sortedMoves)
+    }
+  }
 
 
-
+  console.log('MOVE:', game.turn + 1, resolvedMove, new Date().getTime() - startTime + 'ms')
   response.status(200).send({
-    move: 'up'
+    move: resolvedMove
   })
 }
 
 export default move
-
-const riskProfiles: {
-  [key: string]: RiskProfile
-} = {
-  neutral: {
-    // Is applied if dead
-    playerDead: -1000,
-
-    // Multiplied against current player health
-    playerHealth: 1,
-
-    // Multiplied against each enemies health
-    enemyHealth: -0.5,
-
-    // Multiplied against the delta length between us and the biggest enemy snake (maxes positive at 2 times)
-    relativeLength: 10,
-
-    // Multiplied against the number of enemy snakes alive
-    enemyCount: -20,
-
-    // This number is divided by the number of spaces away a smaller snakes head is
-    smallSnakeProximity: 50,
-
-    // This number is divided by the number of spaces away a larger snakes head is
-    dangerSnakeProximity: -50,
-
-    // Bonus applied to eating a smaller snake head on
-    killBonus: 200
-  }
-}
-
-interface RiskProfile {
-  playerDead: number,
-  playerHealth: number,
-  enemyHealth: number,
-  relativeLength: number,
-  enemyCount: number,
-  smallSnakeProximity: number,
-  dangerSnakeProximity: number,
-  killBonus: number,
-}
-
-function scoreState(state: Game, profile: RiskProfile): number {
-
-  const score: Partial<RiskProfile> = {
-    playerDead: Boolean(state.player) ? 0 : profile.playerDead,
-    playerHealth: profile.playerHealth * state.player.health,
-    enemyHealth: state.board.enemySnakes.reduce((acc, snake) => snake.health + acc, 0) * profile.enemyHealth,
-    enemyCount: state.board.enemySnakes.length * profile.enemyCount
-  }
-
-  const biggestEnemy = state.board.enemySnakes.sort((a, b) => b.body.length - a.body.length)[0];
-  const relativeLength = state.player.body.length - biggestEnemy.body.length;
-  const limitedRelativeLength = Math.min(relativeLength, 2)
-  score.relativeLength = limitedRelativeLength * profile.relativeLength
-
-  return Object.values(score).reduce((acc, i) => acc + i, 0);
-}
-
-interface PossibleFuture {
-  game: Game,
-  children: PossibleFuture[]
-}

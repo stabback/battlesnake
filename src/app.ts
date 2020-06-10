@@ -1,6 +1,9 @@
 /* tslint:disable: no-console */
-
 import 'module-alias/register';
+
+import { install } from 'source-map-support';
+install();
+process.on('unhandledRejection', console.log);
 
 import dotenv from "dotenv"
 import bodyParser from 'body-parser'
@@ -8,6 +11,7 @@ import express from 'express'
 import snakes from '@/snakes'
 import logs from '@/logger'
 import path from 'path';
+
 import Logger from './logger/Logger';
 
 dotenv.config();

@@ -1,6 +1,6 @@
 import Board from "./Board"
-import Snake from "@/snakes/asp/classes/Snake"
-import applyMove from '@/utils/apply-move';
+import Snake from "@/classes/Snake"
+import applyMoveToPoint from '@/utils/apply-move-to-point';
 
 /**
  * Class which tracks the current state of the game.  Should not include snake
@@ -24,7 +24,7 @@ class Game {
   // Determines if a move will result in player death.  Does not look into the
   // future (to check for head collisions)
   isMoveSafe(move: Move): boolean {
-    const updatedHead = applyMove(this.player.head, move)
+    const updatedHead = applyMoveToPoint(this.player.head, move)
 
     // Make sure the point is in the board
     if (!this.board.isPointOnBoard(updatedHead)) {
@@ -40,7 +40,7 @@ class Game {
   }
 
   isMoveMaybeSafe(move: Move): boolean {
-    const point = applyMove(this.player.head, move)
+    const point = applyMoveToPoint(this.player.head, move)
 
     // Make sure the point is in the board
     if (!this.board.isPointOnBoard(point)) {

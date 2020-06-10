@@ -1,17 +1,17 @@
 import { moves } from "@/utils/constants";
-import applyMove from '@/utils/apply-move';
+import applyMoveToPoint from '@/utils/apply-move-to-point';
 import isSamePoint from "@/utils/is-same-point";
 
 class Snake implements SnakeData {
-  public id: string;
-  public name: string;
-  public health: number;
-  public body: Point[];
-  public head: Point;
-  public length: number;
-  public shout: string;
+  readonly id: string;
+  readonly name: string;
+  readonly health: number;
+  readonly body: Point[];
+  readonly head: Point;
+  readonly length: number;
+  readonly shout: string;
 
-  constructor(data: SnakeData, private height: number, private width: number) {
+  constructor(readonly data: SnakeData, readonly height: number, readonly width: number) {
     Object.assign(this, data)
   }
 
@@ -34,7 +34,7 @@ class Snake implements SnakeData {
 
   get possibleNextHeadPositions(): Point[] {
     return moves
-      .map(move => applyMove(this.head, move))
+      .map(move => applyMoveToPoint(this.head, move))
       .filter(updatedHead => {
         return (
           updatedHead.x >= 0 &&
@@ -46,6 +46,21 @@ class Snake implements SnakeData {
       .filter(updatedHead => {
         return !this.body.some(segment => isSamePoint(segment, updatedHead))
       })
+  }
+
+  /**
+   * Returns a new snake moved to the new point.  Does not modify this snake.
+   */
+  move(point: Point, preserveTail = false): Snake {
+    const newData = { ...this.data }
+    newData.body = [point, ...this.body]
+    newData.head = { ...point }
+
+    if (!preserveTail) {
+      newData.body.pop();
+    }
+
+    return new Snake(newData, this.height, this.width);
   }
 }
 

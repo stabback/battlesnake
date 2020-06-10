@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
+      "inlineSourceMap": true,
       "module": "commonjs",
       "esModuleInterop": true,
       "target": "es6",
       "noImplicitAny": true,
       "moduleResolution": "node",
-      "sourceMap": true,
       "outDir": "dist",
       "baseUrl": ".",
       "paths": {
@@ -14,11 +14,11 @@
           ],
           "@/*": [
             "src/*"
-          ],
+          ]
       }
   },
   "include": [
       "src/**/*",
-      "types/*"
+      "types/*", "scenario-tests.ts", "index.d.ts", "scenario-tests.ts"
   ]
 }
