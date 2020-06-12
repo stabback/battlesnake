@@ -6,8 +6,9 @@ import Pathfinder, { Grid } from "@/utils/find-path";
 import isSamePoint from "@/utils/is-same-point";
 import isPointOnBoard from "@/utils/is-point-on-board";
 import { AssertionError } from "assert";
+import { Point } from "@/types";
 
-interface ScenarioHistory {
+export interface ScenarioHistory {
   killBonus: boolean,
 
   /** Array of IDs of snakes that ate last turn, and will be growing this turn */
@@ -94,14 +95,17 @@ class Scenario {
    * Determines this particular scenarios individual score according to the provided risk profile
    */
   private calculateScore() {
+    console.log("Calculating score")
     let score = 0;
 
     if (!this.player || this.player.length === 0) {
+      console.log("-- The player is dead")
       this.score = this.profile.playerDead.impact
       return;
     }
 
     if (!this.enemies || this.enemies.length === 0) {
+      console.log("-- All enemies are dead")
       this.score = this.profile.win.impact
       return;
     }
@@ -109,6 +113,8 @@ class Scenario {
     score = score + (this.profile.playerHealth.impact * this.player.health)
 
     score = score + (this.enemies.reduce((acc, enemy) => acc + enemy.health, 0) * this.profile.enemyHealth.impact);
+
+    console.log("-- Score after health impact", score)
 
     const biggestEnemy = this.enemies.sort((a, b) => b.body.length - a.body.length)[0];
     if (biggestEnemy) {
@@ -206,7 +212,9 @@ class Scenario {
           return testSnake.body.some(segment => isSamePoint(segment, snake.head))
         })
 
-        return (isInBounds && !diedToCollision);
+        const starved = snake.health <= 0
+
+        return (isInBounds && !diedToCollision && !starved);
       })
 
       const newPlayer = survivedSnakes.find(snake => snake.id === this.player.id);

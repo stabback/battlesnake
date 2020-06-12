@@ -1,6 +1,7 @@
 import Snake from "@/classes/Snake";
 import Logger from '@/logger/Logger';
 import isPointOnBoard from "@/utils/is-point-on-board";
+import { Point, BoardData } from "@/types";
 
 interface DescribedPoint extends Point {
   safe: boolean

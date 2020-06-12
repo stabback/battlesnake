@@ -1,6 +1,7 @@
 import Board from "./Board"
 import Snake from "@/classes/Snake"
 import applyMoveToPoint from '@/utils/apply-move-to-point';
+import { GameState, Move } from "@/types";
 
 /**
  * Class which tracks the current state of the game.  Should not include snake

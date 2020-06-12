@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import Game from "@/snakes/asp/classes/Game"
 import strategies from '@/snakes/asp/strategies';
 import logger from "@/logger/Logger"
+import { MoveResponse, GameState, Move } from "@/types";
 
 
 function move(request: Request<{}, MoveResponse, GameState>, response: Response<MoveResponse>) {

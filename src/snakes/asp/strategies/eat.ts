@@ -3,6 +3,7 @@ import pathfinder, { DiagonalMovement } from 'pathfinding';
 
 import logger from "@/logger/Logger";
 import Game from '@/snakes/asp/classes/Game';
+import { Move } from '@/types';
 
 
 function eat(game: Game): Move | null {

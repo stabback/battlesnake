@@ -3,6 +3,7 @@ import Scenario from "../classes/Scenario"
 import Snake from "@/classes/Snake"
 import riskProfiles from "../constants/risk-profiles";
 import getMoveFromPoints from "@/utils/get-move-from-points";
+import { MoveResponse, GameState, Move } from "@/types";
 
 const MAX_EXECUTION_TIME = 300;
 

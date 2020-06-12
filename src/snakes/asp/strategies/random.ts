@@ -2,6 +2,7 @@ import Game from "@/snakes/asp/classes/Game";
 import shuffle from "fast-shuffle";
 import { moves } from "@/utils/constants";
 import logger from "@/logger/Logger";
+import { Move } from "@/types";
 
 function random(game: Game) {
   logger.log(game, `[Random] Starting the random strategy`)

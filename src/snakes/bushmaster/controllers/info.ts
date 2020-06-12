@@ -1,4 +1,5 @@
 import { Request, Response } from "express"
+import { InfoResponse } from "@/types"
 
 function info(request: Request, response: Response<InfoResponse>) {
   const battlesnakeInfo = {

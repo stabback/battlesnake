@@ -1,3 +1,5 @@
+import { Move, Point } from "@/types"
+
 function applyMoveToPoint(point: Point, move: Move): Point {
   switch (move) {
     case 'up':

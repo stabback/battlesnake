@@ -1,3 +1,5 @@
+import { Point } from "@/types";
+
 function isPointOnBoard(point: Point, height: number, width: number) {
   if (point.x < 0 || point.y < 0) return false;
 

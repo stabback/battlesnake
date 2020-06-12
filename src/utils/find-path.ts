@@ -1,4 +1,5 @@
 import pathfinder, { Grid, DiagonalMovement } from 'pathfinding';
+import { Point } from '@/types';
 
 export { Grid } from 'pathfinding'
 class PathfinderClass {

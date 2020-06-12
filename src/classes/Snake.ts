@@ -1,11 +1,12 @@
 import { moves } from "@/utils/constants";
 import applyMoveToPoint from '@/utils/apply-move-to-point';
 import isSamePoint from "@/utils/is-same-point";
+import { SnakeData, Point } from "@/types";
 
 class Snake implements SnakeData {
   readonly id: string;
   readonly name: string;
-  readonly health: number;
+  public health: number;
   readonly body: Point[];
   readonly head: Point;
   readonly length: number;
@@ -51,13 +52,17 @@ class Snake implements SnakeData {
   /**
    * Returns a new snake moved to the new point.  Does not modify this snake.
    */
-  move(point: Point, preserveTail = false): Snake {
+  move(point: Point, didEat = false): Snake {
     const newData = { ...this.data }
     newData.body = [point, ...this.body]
     newData.head = { ...point }
 
-    if (!preserveTail) {
+    if (!didEat) {
+      newData.health = this.data.health - 1
       newData.body.pop();
+    } else {
+      console.log("New snake has eaten!")
+      newData.health = 80;
     }
 
     return new Snake(newData, this.height, this.width);

@@ -1,14 +1,14 @@
-interface GameData {
+export interface GameData {
   id: string
   timeout: number
 }
 
-interface Point {
+export interface Point {
   x: number
   y: number
 }
 
-interface SnakeData {
+export interface SnakeData {
   id: string
   name: string
   health: number
@@ -18,14 +18,14 @@ interface SnakeData {
   shout: string
 }
 
-interface BoardData {
+export interface BoardData {
   height: number
   width: number
   food: Point[]
   snakes: SnakeData[]
 }
 
-interface GameState {
+export interface GameState {
   game: GameData
   turn: number
   board: BoardData
@@ -33,7 +33,7 @@ interface GameState {
 }
 
 // Info
-interface InfoResponse {
+export interface InfoResponse {
   apiversion: string
   author: string
   color: string
@@ -43,9 +43,9 @@ interface InfoResponse {
 
 
 // Move
-type Move = 'up' | 'left' | 'right' | 'down'
+export type Move = 'up' | 'left' | 'right' | 'down'
 
-interface MoveResponse {
+export interface MoveResponse {
   move: Move
   shout?: string
 }
