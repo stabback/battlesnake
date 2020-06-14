@@ -5,7 +5,7 @@ import riskProfiles from "../constants/risk-profiles";
 import getMoveFromPoints from "@/utils/get-move-from-points";
 import { MoveResponse, GameState, Move } from "@/types";
 
-const MAX_EXECUTION_TIME = 300;
+const MAX_EXECUTION_TIME = 100;
 
 function move(request: Request<{}, MoveResponse, GameState>, response: Response<MoveResponse>) {
   const startTime = new Date().getTime();

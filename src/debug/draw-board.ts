@@ -10,13 +10,18 @@ const ENEMY_STYLES = [
   { token: 'e', color: chalk.yellow }
 ]
 
-function drawBoard(width: number, height: number, player: Snake, enemies: Snake[], food: Point[]) {
+function drawBoard(width: number, height: number, player: Snake, enemies: Snake[], food: Point[]): string[] {
   const lines = []
 
   // Initial dashes
   lines.push(Array(width).fill('-').join(''));
 
-  lines.push(`a: ${player.health}`)
+  if (player) {
+    lines.push(`a: ${player.health}`)
+  } else {
+    lines.push(`a: DEAD!`)
+  }
+
   enemies.forEach((enemy, index) => lines.push(`${ENEMY_STYLES[index].token}: ${enemy.health}`))
 
   lines.push(Array(width).fill('-').join(''));
@@ -24,14 +29,16 @@ function drawBoard(width: number, height: number, player: Snake, enemies: Snake[
   // Setup the grid
   const grid = Array.from(Array(height), () => Array(width).fill('.'))
 
-  // Fill in food
-  food.forEach(item => grid[item.y][item.x] = chalk.red('@'))
-
   // Fill in the player
-  drawSnake(grid, player, 'a', chalk.magenta)
+  if (player) {
+    drawSnake(grid, player, 'a', chalk.magenta)
+  }
 
   // Fill in enemies
   enemies.forEach((snake, index) => drawSnake(grid, snake, ENEMY_STYLES[index].token, ENEMY_STYLES[index].color))
+
+  // Fill in food
+  food.forEach(item => grid[item.y][item.x] = chalk.red('@'))
 
   // Inverse for looks
   grid.reverse();
@@ -43,7 +50,7 @@ function drawBoard(width: number, height: number, player: Snake, enemies: Snake[
   lines.push(Array(width).fill('-').join(''));
 
   // Print it out
-  lines.forEach(line => console.log(line))
+  return lines;
 }
 
 function drawSnake(board: string[][], snake: Snake, token: string, colorFunc: (input: string) => string) {

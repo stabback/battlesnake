@@ -52,17 +52,13 @@ class Snake implements SnakeData {
   /**
    * Returns a new snake moved to the new point.  Does not modify this snake.
    */
-  move(point: Point, didEat = false): Snake {
+  move(point: Point, preserveTail = false): Snake {
     const newData = { ...this.data }
     newData.body = [point, ...this.body]
     newData.head = { ...point }
 
-    if (!didEat) {
-      newData.health = this.data.health - 1
+    if (!preserveTail) {
       newData.body.pop();
-    } else {
-      console.log("New snake has eaten!")
-      newData.health = 80;
     }
 
     return new Snake(newData, this.height, this.width);

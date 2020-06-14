@@ -1,5 +1,7 @@
 export type RiskProfileNames = 'normal'
 
+export type RiskCategories = 'playerDead' | 'playerHealth' | 'enemyHealth' | 'relativeLength' | 'enemyCount' | 'smallSnakeProximity' | 'dangerSnakeProximity' | 'killBonus' | 'hungry' | 'starving' | 'win'
+
 export interface RiskProfile {
   playerDead: {
     impact: number
@@ -52,7 +54,7 @@ export interface RiskProfile {
 
 const normal: RiskProfile = {
   playerDead: {
-    impact: -100,
+    impact: -9000,
   },
 
   playerHealth: {
@@ -74,11 +76,11 @@ const normal: RiskProfile = {
   },
 
   smallSnakeProximity: {
-    impact: 50
+    impact: 200
   },
 
   dangerSnakeProximity: {
-    impact: -50
+    impact: -400
   },
 
   killBonus: {

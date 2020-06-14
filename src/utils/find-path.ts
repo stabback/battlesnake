@@ -8,9 +8,11 @@ class PathfinderClass {
   })
 
   find(from: Point, to: Point, grid: Grid) {
+    grid.setWalkableAt(from.x, from.y, true)
+    grid.setWalkableAt(to.x, to.y, true)
     const paths = this.finder.findPath(from.x, from.y, to.x, to.y, grid).filter(path => path && path.length)
 
-    if (paths.length) return paths[0]
+    if (paths.length) return paths
 
     return []
   }

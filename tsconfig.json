@@ -15,10 +15,11 @@
           "@/*": [
             "src/*"
           ]
-      }
+      },
+      "typeRoots" : ["./node_modules/@types", "./types"]
   },
   "include": [
       "src/**/*",
-      "types/*", "scenario-tests.ts", "index.d.ts", "scenario-tests.ts"
+      "types/*", "scenario-tests.ts", "index.d.ts", "scenario-tests.ts", "types/fast-cartesian/fast-cartesian.d.ts"
   ]
 }

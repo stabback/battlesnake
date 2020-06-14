@@ -1,63 +1,38 @@
 import Scenario from "../snakes/bushmaster/classes/Scenario";
 import Snake from "../classes/Snake";
 import riskProfiles from "../snakes/bushmaster/constants/risk-profiles";
+import parseBoardArt from './parse-board-art';
+import drawBoard from "./draw-board";
 
-
-/**
- * ..h.
- * ..xx
- * .h..
- * .yyy
- */
-
-const height = 4
-const width = 4
-
-
-
-const food = [{x: 1, y: 3}]
-
-const player = new Snake({
-  id: 'PLAYER',
-  name: 'PLAYER',
-  health: 70,
-  body: [{ x: 2, y: 3 }, { x: 2, y: 2 }, { x: 3, y: 2 }],
-  head: { x: 2, y: 3 },
-  length: 3,
-  shout: 'no'
-}, height, width)
-
-const enemy = new Snake({
-  id: 'ENEMY',
-  name: 'ENEMY',
-  health: 70,
-  body: [{ x: 1, y: 1 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: 3, y: 0 }],
-  head: { x: 1, y: 1 },
-  length: 4,
-  shout: 'no'
-}, height, width)
-
+const { width, height, player, enemies, food } = parseBoardArt(`
+a.bbb
+aBb..
+A....
+.....
+.Cccc
+`)
 
 
 const scenario = new Scenario(
   width,
   height,
   player,
-  [enemy],
+  enemies,
   food,
   riskProfiles.normal,
   {killBonus: false, ate: [], age: 2}
 );
 
 
-scenario.createChildren();
+// console.log("Root Scenario");
+// const rootLines = drawBoard(width, height, scenario.player, scenario.snakes.filter(snake => snake.id !== 'a'), scenario.food)
+// rootLines.forEach(line => console.log(line))
 
+console.time('Root scenario child creation')
+for (let i = 0; i <= 1; i++) {
+  scenario.children = [];
+  scenario.createChildren();
+}
 
-
-scenario.children.forEach(child => {
-  console.log(child.score, child.player.head, child.snakes[1].head)
-})
-
-
-
+console.timeEnd('Root scenario child creation')
 

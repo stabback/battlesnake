@@ -63,8 +63,8 @@ function parseBoardArt(art: string) {
 
   tokenGroups.forEach(tokenGroup => {
     const snake = new Snake({
-      id: `snake-${tokenGroup.token}`,
-      name: `Snake ${tokenGroup.token}`,
+      id: `${tokenGroup.token}`,
+      name: `${tokenGroup.token}`,
       health: 80,
       body: [tokenGroup.upper, ...tokenGroup.lower],
       head: tokenGroup.upper,
