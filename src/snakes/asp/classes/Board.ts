@@ -22,7 +22,7 @@ class Board {
     this.height = data.height;
     this.width = data.width;
     this.food = data.food;
-    this.snakes = data.snakes.map(snakeData => new Snake(snakeData, this.height, this.width))
+    this.snakes = data.snakes.map(snakeData => new Snake(snakeData, this.width, this.height))
     this.enemySnakes = this.snakes.filter(snake => snake.id !== youId)
 
     this.points = [];

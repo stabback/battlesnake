@@ -11,8 +11,8 @@ function move(request: Request<{}, MoveResponse, GameState>, response: Response<
   const startTime = new Date().getTime();
 
   const game = request.body
-  const player = new Snake(game.you, game.board.height, game.board.width);
-  const enemies = game.board.snakes.filter(snake => snake.id !== player.id).map(snake => new Snake(snake, game.board.height, game.board.width));
+  const player = new Snake(game.you, game.board.width, game.board.height);
+  const enemies = game.board.snakes.filter(snake => snake.id !== player.id).map(snake => new Snake(snake, game.board.width, game.board.height));
 
   const rootScenario = new Scenario(
     game.board.width,

@@ -27,8 +27,8 @@ function scenario(request: Request<{}, string, {}, { scenarioArgs: string, child
     scenarioInstance = new Scenario(
       scenarioArgs.width,
       scenarioArgs.height,
-      new Snake(scenarioArgs.player, scenarioArgs.height, scenarioArgs.width),
-      scenarioArgs.enemies.map(data => new Snake(data, scenarioArgs.height, scenarioArgs.width)),
+      new Snake(scenarioArgs.player, scenarioArgs.width, scenarioArgs.height),
+      scenarioArgs.enemies.map(data => new Snake(data, scenarioArgs.width, scenarioArgs.height)),
       scenarioArgs.food,
       scenarioArgs.profile,
       scenarioArgs.history,

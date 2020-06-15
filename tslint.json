@@ -6,7 +6,9 @@
   "jsRules": {},
   "rules": {
       "trailing-comma": [ false ],
-      "no-console": false
+      "no-console": false,
+      "semicolon": false,
+      "arrow-parens": [true, "ban-single-arg-parens"]
   },
   "rulesDirectory": []
 }

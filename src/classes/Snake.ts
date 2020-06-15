@@ -12,7 +12,7 @@ class Snake implements SnakeData {
   readonly length: number;
   readonly shout: string;
 
-  constructor(readonly data: SnakeData, readonly height: number, readonly width: number) {
+  constructor(readonly data: SnakeData, readonly width: number, readonly height: number) {
     Object.assign(this, data)
   }
 
@@ -54,14 +54,14 @@ class Snake implements SnakeData {
    */
   move(point: Point, preserveTail = false): Snake {
     const newData = { ...this.data }
-    newData.body = [point, ...this.body]
+    newData.body = [{ ...point }, ...this.body]
     newData.head = { ...point }
 
     if (!preserveTail) {
       newData.body.pop();
     }
 
-    return new Snake(newData, this.height, this.width);
+    return new Snake(newData, this.width, this.height);
   }
 }
 

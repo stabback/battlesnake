@@ -16,13 +16,16 @@ function drawBoard(width: number, height: number, player: Snake, enemies: Snake[
   // Initial dashes
   lines.push(Array(width).fill('-').join(''));
 
+  const healthBar = [];
   if (player) {
-    lines.push(`a: ${player.health}`)
+    healthBar.push(chalk.magenta(`a: ${player.health}`))
   } else {
-    lines.push(`a: DEAD!`)
+    healthBar.push(`a: DEAD!`)
   }
 
-  enemies.forEach((enemy, index) => lines.push(`${ENEMY_STYLES[index].token}: ${enemy.health}`))
+  enemies.forEach((enemy, index) => healthBar.push(ENEMY_STYLES[index].color(`${ENEMY_STYLES[index].token}: ${enemy.health}`)))
+
+  lines.push(healthBar.join(' | '))
 
   lines.push(Array(width).fill('-').join(''));
 
@@ -54,8 +57,15 @@ function drawBoard(width: number, height: number, player: Snake, enemies: Snake[
 }
 
 function drawSnake(board: string[][], snake: Snake, token: string, colorFunc: (input: string) => string) {
-  snake.body.forEach(segment => board[segment.y][segment.x] = colorFunc(token))
-  board[snake.head.y][snake.head.x] = colorFunc(token.toUpperCase())
+  try {
+    snake.body.forEach(segment => {
+      board[segment.y][segment.x] = colorFunc(token)
+    })
+    board[snake.head.y][snake.head.x] = colorFunc(token.toUpperCase())
+  } catch (e) {
+    throw new Error('Attempting to draw a snake which has parts that are not on the board!')
+  }
+
 }
 
 export default drawBoard
