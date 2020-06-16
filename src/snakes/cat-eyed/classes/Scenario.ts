@@ -17,6 +17,9 @@ interface Outcome {
 
 type Possibilities = { x: number, y: number, id: string }[][]
 
+type OutcomeByMove = {
+  [key in Move]: Outcome
+}
 
 class Scenario {
   /** Unique id for this specific scenario */
@@ -32,9 +35,15 @@ class Scenario {
   /** An array consisting of direct child scenarios */
   public children: Scenario[]
 
-  public childOutcomes: { [key: string]: Outcome }
-
   public possibilities: Possibilities = []
+
+  public get age(): number {
+    if (this.parent) {
+      return this.parent.age + 1
+    }
+
+    return 1
+  }
 
   public get possibleMoves(): Move[] {
     return [...new Set(this.possibilities
@@ -44,7 +53,40 @@ class Scenario {
       .map(point => getMoveFromPoints(this.player.head, point)))].sort()
   }
 
-  public bestMove: Move;
+  public get outcomeByMove(): Partial<OutcomeByMove> {
+
+    return this.children.reduce((acc: Partial<OutcomeByMove>, child: Scenario) => {
+      const move = getMoveFromPoints(this.player.head, child.player.head);
+
+      const currentOutcome: Outcome = acc[move] ? {
+        ...acc[move]
+      } : {
+          win: 0,
+          lose: 0,
+          unknown: 0
+        }
+
+      return {
+        ...acc,
+        [move]: {
+          win: child.outcome.win + currentOutcome.win,
+          lose: child.outcome.lose + currentOutcome.lose,
+          unknown: child.outcome.unknown + currentOutcome.unknown
+        }
+      }
+    }, {})
+  }
+
+  public get moveOdds(): { move: Move, odds: number }[] {
+    return Object.keys(this.outcomeByMove).map((move: Move) => ({
+      move,
+      odds: (this.outcomeByMove[move].lose / (this.outcomeByMove[move].lose + this.outcomeByMove[move].win + this.outcomeByMove[move].unknown))
+    })).sort((a, b) => a.odds - b.odds)
+  }
+
+  public get bestMove(): Move {
+    return this.moveOdds[0].move
+  }
 
   constructor(
     public player: Snake,
@@ -56,6 +98,7 @@ class Scenario {
     readonly height: number,
     public parent?: Scenario,
   ) {
+
 
     this.id = crypto.createHash('sha1').update(JSON.stringify({
       player, enemies, food, ate, parent: parent ? parent.id : ''

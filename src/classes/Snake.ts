@@ -53,9 +53,15 @@ class Snake implements SnakeData {
    * Returns a new snake moved to the new point.  Does not modify this snake.
    */
   move(point: Point, preserveTail = false): Snake {
-    const newData = { ...this.data }
-    newData.body = [{ ...point }, ...this.body]
-    newData.head = { ...point }
+    const newData: SnakeData = {
+      id: this.id,
+      name: this.name,
+      health: this.health,
+      body: [{ ...point }, ...this.body],
+      head: { ...point },
+      length: this.length,
+      shout: this.shout
+    }
 
     if (!preserveTail) {
       newData.body.pop();

@@ -1,6 +1,5 @@
 import Game from './Game';
 import Scenario from '@/snakes/cat-eyed/classes/Scenario';
-import drawBoard from '@/debug/draw-board';
 
 
 class ControllerClass {
@@ -34,8 +33,6 @@ class ControllerClass {
   }
 
   public doWork() {
-    console.log('')
-    console.log("DOING WORK - Work items remaining", this.workQueue.length)
     if (this.workQueue.length === 0) return;
 
     this.workUnitsDone = this.workUnitsDone + 1;
@@ -43,16 +40,12 @@ class ControllerClass {
     const scenario = this.workQueue.shift();
 
     scenario.createChildren();
-
-    console.log("DONE WORK = Work items done total", this.workUnitsDone)
-    console.log("")
   }
 
   public addWorkItem(scenario: Scenario) {
-    console.log("-- Adding work item", scenario.id)
-    const art = drawBoard(scenario.width, scenario.height, scenario.player, scenario.enemies, scenario.food);
-    art.forEach(line => console.log(line))
-    this.workQueue.push(scenario)
+    if (scenario.age <= 7) {
+      this.workQueue.push(scenario)
+    }
   }
 }
 
