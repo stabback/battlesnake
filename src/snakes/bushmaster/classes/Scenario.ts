@@ -170,7 +170,7 @@ class Scenario {
 
     const possibleCombinations = fastCartesian(possibleMoves) as { x: number, y: number, id: string }[][];
 
-    this.children = possibleCombinations.map((combination) => {
+    this.children = possibleCombinations.map(combination => {
 
       const newHistory: ScenarioHistory = {
         killBonus: false,

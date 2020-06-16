@@ -39,20 +39,20 @@ class LoggerClass {
   async restore() {
     console.log("Restoring logs...");
     // Read in any existing game logs
-    const query = datastore
-      .createQuery('gameLog')
-      .order('start', {
-        descending: true
-      })
-      .limit(10)
+    // const query = datastore
+    //   .createQuery('gameLog')
+    //   .order('start', {
+    //     descending: true
+    //   })
+    //   .limit(10)
 
-    const res = (await datastore.runQuery(query))[0]
-    if (res) {
-      this.games = res.map(log => log.game)
-      console.log("Restored", this.games.length, 'logs')
-    } else {
-      console.warn("Did not restore any logs")
-    }
+    // const res = (await datastore.runQuery(query))[0]
+    // if (res) {
+    //   this.games = res.map(log => log.game)
+    //   console.log("Restored", this.games.length, 'logs')
+    // } else {
+    //   console.warn("Did not restore any logs")
+    // }
   }
 
   getGameLog(gameId: string): GameLog {

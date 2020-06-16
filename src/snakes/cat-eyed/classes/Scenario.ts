@@ -46,20 +46,17 @@ class Scenario {
   }
 
   public get possibleMoves(): Move[] {
-    return [...new Set(this.possibilities
-      .map(possibility => possibility.filter(p => p.id === this.player.id))
-      .filter(possibility => possibility.length === 1)
-      .map(possibility => possibility[0])
-      .map(point => getMoveFromPoints(this.player.head, point)))].sort()
+    return [...new Set(this.children.map(child => child.move))].sort()
   }
 
   public get outcomeByMove(): Partial<OutcomeByMove> {
+    if (!this.children || !this.player) {
+      return {}
+    }
 
     return this.children.reduce((acc: Partial<OutcomeByMove>, child: Scenario) => {
-      const move = getMoveFromPoints(this.player.head, child.player.head);
-
-      const currentOutcome: Outcome = acc[move] ? {
-        ...acc[move]
+      const currentOutcome: Outcome = acc[child.move] ? {
+        ...acc[child.move]
       } : {
           win: 0,
           lose: 0,
@@ -68,7 +65,7 @@ class Scenario {
 
       return {
         ...acc,
-        [move]: {
+        [child.move]: {
           win: child.outcome.win + currentOutcome.win,
           lose: child.outcome.lose + currentOutcome.lose,
           unknown: child.outcome.unknown + currentOutcome.unknown
@@ -85,7 +82,7 @@ class Scenario {
   }
 
   public get bestMove(): Move {
-    return this.moveOdds[0].move
+    return this.moveOdds[0]?.move || 'up'
   }
 
   constructor(
@@ -93,15 +90,16 @@ class Scenario {
     public enemies: Snake[],
     public food: Point[],
     public ate: string[],
-    private gameId: string,
+    public gameId: string,
     readonly width: number,
     readonly height: number,
     public parent?: Scenario,
+    public move?: Move
   ) {
 
 
     this.id = crypto.createHash('sha1').update(JSON.stringify({
-      player, enemies, food, ate, parent: parent ? parent.id : ''
+      player, enemies, food, ate,
     })).digest('base64')
 
     if (!player) {
@@ -132,26 +130,37 @@ class Scenario {
 
       this.possibilities = fastCartesian(likelyNextHeadPositions) as Possibilities;
 
-      this.outcome.unknown = this.possibilities.length
+      this.outcome.unknown = 1
     }
 
     if (this.parent) {
-      this.parent.resolveChildOutcome(this.outcome)
-
       Controller.addWorkItem(this)
     }
   }
 
-  public resolveChildOutcome(outcome: Outcome) {
-    this.outcome.unknown = this.outcome.unknown - 1;
-    this.outcome = {
-      win: this.outcome.win + outcome.win,
-      lose: this.outcome.lose + outcome.lose,
-      unknown: this.outcome.unknown + outcome.unknown,
+  public resolveChildOutcome() {
+    if (!this.children || this.children.length === 0) return;
+
+    const newOutcome: Outcome = {
+      win: 0,
+      lose: 0,
+      unknown: 0
     }
 
+    this.children.forEach(child => {
+      newOutcome.win = newOutcome.win + child.outcome.win
+      newOutcome.lose = newOutcome.lose + child.outcome.lose
+      newOutcome.unknown = newOutcome.unknown + child.outcome.unknown
+    })
+
+    newOutcome.win = newOutcome.win / this.children.length
+    newOutcome.lose = newOutcome.lose / this.children.length
+    newOutcome.unknown = newOutcome.unknown / this.children.length
+
+    this.outcome = newOutcome
+
     if (this.parent) {
-      this.parent.resolveChildOutcome(this.outcome)
+      this.parent.resolveChildOutcome()
     }
   }
 
@@ -177,6 +186,7 @@ class Scenario {
         const currentSnake = snakes.find(s => s.id === id);
         const newSnake = currentSnake.move(newHead, didEat);
 
+
         if (isEating) {
           newSnake.health = 80;
         } else {
@@ -185,6 +195,8 @@ class Scenario {
 
         return newSnake
       })
+
+      const move: Move = getMoveFromPoints(this.player.head, newSnakes.find(s => s.id === this.player.id).head)
 
       // Remove any ate food, and pass the new ate status on
       // TODO this should be done in the prior loop
@@ -227,9 +239,12 @@ class Scenario {
         this.gameId,
         this.width,
         this.height,
-        this
+        this,
+        move
       )
     })
+
+    this.resolveChildOutcome();
 
   }
 }
