@@ -1,1 +1,4 @@
-runtime: nodejs12
+runtime: nodejs
+env: flex
+resources:
+  memory_gb: 4

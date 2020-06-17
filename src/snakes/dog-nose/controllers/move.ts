@@ -5,10 +5,11 @@ import Scenario from "@/snakes/dog-nose/classes/Scenario";
 import Snake from "@/classes/Snake";
 import isSamePoint from "@/utils/is-same-point";
 import strategies from "../strategies";
-import Game from "@/snakes/asp/classes/Game";
+import AspGame from "@/snakes/asp/classes/Game";
 import chalk from "chalk";
+import Game from "../classes/Game";
 
-const NETWORK_BUFFER = 175;
+const NETWORK_BUFFER = 250;
 
 async function move(request: Request<{}, MoveResponse, GameState>, response: Response<MoveResponse>) {
   const startTime = new Date().getTime();
@@ -18,7 +19,7 @@ async function move(request: Request<{}, MoveResponse, GameState>, response: Res
 
   const gameState = request.body
 
-  const game = new Game(gameState)
+  const game = new AspGame(gameState)
 
   let resolvedMove: Move;
 
@@ -47,8 +48,19 @@ async function move(request: Request<{}, MoveResponse, GameState>, response: Res
 
   const endTime = new Date().getTime()
 
+  let oracleGame = Oracle.getGame(game.id);
+
+  if (!oracleGame) {
+    Oracle.addGame(new Game(gameState))
+    oracleGame = Oracle.getGame(game.id)
+    console.log(
+      game.turn,
+      chalk.bgWhite.black(resolvedMove),
+      "Oracle does not have this game, recreating!"
+    )
+  }
   const odds = Oracle.getGame(game.id).scenario.moveOdds;
-  const resolvedMoveOdds = odds.find(o => o.move === resolvedMove)
+  const resolvedMoveOdds = odds?.find(o => o.move === resolvedMove)
 
   console.log(
     game.turn,
@@ -59,7 +71,7 @@ async function move(request: Request<{}, MoveResponse, GameState>, response: Res
   );
 
   if (resolvedMoveOdds?.loseOdds > 0.3) {
-    resolvedMove = Oracle.getGame(game.id).scenario.safestMove;
+    resolvedMove = Oracle.getGame(game.id)?.scenario?.safestMove;
     console.log("--", chalk.redBright("ORACLE INTERCEPTED"))
     console.log("-- SENDING", resolvedMove)
   }
@@ -72,6 +84,15 @@ async function move(request: Request<{}, MoveResponse, GameState>, response: Res
 function initializeOracle(state: GameState) {
 
   const game = Oracle.getGame(state.game.id);
+
+  if (!game) {
+    console.error("ERROR - Can't find this game in oracle?")
+    console.log("--", state.game.id)
+    console.log("--", Oracle.runningGames)
+    console.log("--", Oracle.games.map(g => g.id))
+
+    return
+  }
 
   const player = new Snake(state.you, game.width, game.height);
 

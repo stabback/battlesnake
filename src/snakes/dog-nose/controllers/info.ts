@@ -5,7 +5,7 @@ function info(request: Request, response: Response<InfoResponse>) {
   const battlesnakeInfo = {
     apiversion: '1',
     author: 'Josh Stabback',
-    color: '#D0G05E',
+    color: '#D0605E',
     head: 'smile',
     tail: 'curled'
   }

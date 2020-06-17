@@ -4,7 +4,7 @@ import Scenario from '@/snakes/dog-nose/classes/Scenario';
 const MAX_AGE = 7
 
 class OracleClass {
-  private games: Game[] = [];
+  public games: Game[] = [];
 
   public run = false;
 
