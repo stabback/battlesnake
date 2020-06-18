@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { GameState } from '@/types'
-import Oracle from '../classes/Oracle'
+import Simulator from '../classes/Simulator'
+import Controller from '../classes/Controller'
 
 function end(
     request: Request<{}, string, GameState>,
@@ -8,7 +9,9 @@ function end(
 ) {
     const state = request.body
 
-    Oracle.endGame(state.game.id)
+    const game = Controller.getGame(state.game.id)
+
+    game.end()
 
     response.status(200).send('ok')
 }

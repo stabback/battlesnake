@@ -5,18 +5,28 @@ import Snake from '@/classes/Snake'
 import { Point, Move } from '@/types'
 import isSamePoint from '@/utils/is-same-point'
 import isPointOnBoard from '@/utils/is-point-on-board'
-import Oracle from './Oracle'
-import applyMoveToPoint from '../../../utils/apply-move-to-point'
+import applyMoveToPoint from '@/utils/apply-move-to-point'
 import getMoveFromPoints from '@/utils/get-move-from-points'
+import Game from './Game'
 
+/**
+ * Describes the chances this scenario has of different results
+ */
 interface Outcome {
+    /** Chance this scenario results in a win */
     win: number
+
+    /** Chance this scenario results in the player losing */
     lose: number
+
+    /** Chance this scenario results in a win or a loss, we can't see that far ahead yet */
     unknown: number
 }
 
+/** A list of the the next potential snake head positions */
 type Possibilities = { x: number; y: number; id: string }[][]
 
+/** Describes the outcomes of different moves */
 type OutcomeByMove = { [key in Move]: Outcome }
 
 class Scenario {
@@ -33,8 +43,10 @@ class Scenario {
     /** An array consisting of direct child scenarios */
     public children: Scenario[]
 
+    /** All likely future snake head states */
     public possibilities: Possibilities = []
 
+    /** How many scenarios away from the base scenario this scenario is */
     public get age(): number {
         if (this.parent) {
             return this.parent.age + 1
@@ -43,15 +55,18 @@ class Scenario {
         return 1
     }
 
+    /** A list of all moves our snake can make from this position */
     public get possibleMoves(): Move[] {
         return [...new Set(this.children.map(child => child.move))].sort()
     }
 
+    /** Outcomes for all valid moves */
     public get outcomeByMove(): Partial<OutcomeByMove> {
         if (!this.children || !this.player) {
             return {}
         }
 
+        // Get a mapping of how many possibilities may come from each move we do
         const possibilitiesByMove = this.children.reduce(
             (acc, child) => {
                 return {
@@ -62,6 +77,7 @@ class Scenario {
             { up: 0, left: 0, right: 0, down: 0 }
         )
 
+        // Add all outcomes together by move
         const outcomes = this.children.reduce(
             (acc: Partial<OutcomeByMove>, child: Scenario) => {
                 const currentOutcome: Outcome = acc[child.move]
@@ -86,18 +102,19 @@ class Scenario {
             {}
         )
 
+        // Divide the outcomes by the number of possibilities to determine the chances of a result
         Object.keys(outcomes).forEach((move: Move) => {
-            ;(outcomes[move].win =
-                outcomes[move].win / possibilitiesByMove[move]),
-                (outcomes[move].lose =
-                    outcomes[move].lose / possibilitiesByMove[move]),
-                (outcomes[move].unknown =
-                    outcomes[move].unknown / possibilitiesByMove[move])
+            outcomes[move].win = outcomes[move].win / possibilitiesByMove[move]
+            outcomes[move].lose =
+                outcomes[move].lose / possibilitiesByMove[move]
+            outcomes[move].unknown =
+                outcomes[move].unknown / possibilitiesByMove[move]
         })
 
         return outcomes
     }
 
+    /** Rearrange the outcomes into an array for easier parsing */
     public get moveOdds(): { move: Move; winOdds: number; loseOdds: number }[] {
         return Object.keys(this.outcomeByMove).map((move: Move) => {
             return {
@@ -108,6 +125,7 @@ class Scenario {
         })
     }
 
+    /** Determine which move has the lowest chance of losing */
     public get safestMove(): Move {
         if (this.moveOdds.length > 0) {
             return this.moveOdds.sort((a, b) => a.loseOdds - b.loseOdds)[0].move
@@ -121,12 +139,11 @@ class Scenario {
         public enemies: Snake[],
         public food: Point[],
         public ate: string[],
-        public gameId: string,
-        readonly width: number,
-        readonly height: number,
+        public game: Game,
         public parent?: Scenario,
         public move?: Move
     ) {
+        /** Create a unique hash for this scenario to help compare against future game states */
         this.id = crypto
             .createHash('sha1')
             .update(
@@ -146,6 +163,8 @@ class Scenario {
         } else {
             const snakes = [player, ...enemies]
 
+            // Get a list of likely next head positions for snakes.  Likely here is defined as positions for each snake
+            // where they do not immediately run off the map or against another snake.
             const likelyNextHeadPositions = snakes.map(snake => {
                 const possiblePositions = snake.possibleNextHeadPositions
 
@@ -169,26 +188,31 @@ class Scenario {
                     )
                 }
 
-                // Adds the snake ID to help track it
+                // Add the snake ID to help track it
                 return possibleSurvivalPositions.map(point => ({
                     ...point,
                     id: snake.id
                 }))
             })
 
+            // Get all possible combinations of likely head positions for the simulator
             this.possibilities = fastCartesian(
                 likelyNextHeadPositions
             ) as Possibilities
 
             this.outcome.unknown = 1
         }
-
-        if (this.parent) {
-            Oracle.addWorkItem(this)
-        }
     }
 
-    public resolveChildOutcome() {
+    /**
+     * Calculates the outcome for this scenario.  Averages the odds for each child together
+     *
+     * This is done as a step instead of as a getter so that the result is readily
+     * available.  We don't want the final calculation to take time for performance reasons.
+     */
+    public calculateOutcome() {
+        // If there are no child scenarios, the win/loss would have already been calculated
+        // in the constructor
         if (!this.children || this.children.length === 0) return
 
         const newOutcome: Outcome = {
@@ -197,27 +221,29 @@ class Scenario {
             unknown: 0
         }
 
+        // Add the outcome for all children together
         this.children.forEach(child => {
             newOutcome.win = newOutcome.win + child.outcome.win
             newOutcome.lose = newOutcome.lose + child.outcome.lose
             newOutcome.unknown = newOutcome.unknown + child.outcome.unknown
         })
 
+        // Average out all outcomes
         newOutcome.win = newOutcome.win / this.children.length
         newOutcome.lose = newOutcome.lose / this.children.length
         newOutcome.unknown = newOutcome.unknown / this.children.length
 
         this.outcome = newOutcome
 
+        // Get the parent to recalculate its outcome
         if (this.parent) {
-            this.parent.resolveChildOutcome()
+            this.parent.calculateOutcome()
         }
     }
 
-    public activate() {
-        this.parent = null
-    }
-
+    /**
+     * Create scenarios for each possible snake movement
+     */
     public createChildren() {
         if (this.possibilities.length === 0) {
             return
@@ -287,8 +313,8 @@ class Scenario {
 
                 const isOnBoard = isPointOnBoard(
                     snake.head,
-                    this.height,
-                    this.width
+                    this.game.height,
+                    this.game.width
                 )
 
                 const starved = snake.health <= 0
@@ -305,15 +331,13 @@ class Scenario {
                 survivedSnakes.filter(snake => snake.id !== this.player.id),
                 newFood,
                 newAte,
-                this.gameId,
-                this.width,
-                this.height,
+                this.game,
                 this,
                 move
             )
         })
 
-        this.resolveChildOutcome()
+        this.calculateOutcome()
     }
 }
 

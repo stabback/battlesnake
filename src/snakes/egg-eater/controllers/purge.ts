@@ -1,8 +1,9 @@
 import { Request, Response } from 'express'
-import Oracle from '../classes/Oracle'
+import Simulator from '../classes/Simulator'
+import Controller from '../classes/Controller'
 
 function purge(request: Request, response: Response) {
-    Oracle.reset()
+    Controller.simulator.reset()
 
     response.status(200).send('oracle is reset!')
 }

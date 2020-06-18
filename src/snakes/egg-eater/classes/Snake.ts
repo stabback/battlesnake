@@ -2,6 +2,7 @@ import { moves } from '@/utils/constants'
 import applyMoveToPoint from '@/utils/apply-move-to-point'
 import isSamePoint from '@/utils/is-same-point'
 import { SnakeData, Point } from '@/types'
+import isPointOnBoard from '@/utils/is-point-on-board'
 
 class Snake implements SnakeData {
     readonly id: string
@@ -40,16 +41,14 @@ class Snake implements SnakeData {
         return segments.some(segment => isSamePoint(segment, point))
     }
 
+    /**
+     * Returns a list of points that are both on the board and do not collide with itself
+     */
     get possibleNextHeadPositions(): Point[] {
         return moves
             .map(move => applyMoveToPoint(this.head, move))
             .filter(updatedHead => {
-                return (
-                    updatedHead.x >= 0 &&
-                    updatedHead.y >= 0 &&
-                    updatedHead.x < this.width &&
-                    updatedHead.y < this.height
-                )
+                return isPointOnBoard(updatedHead, this.height, this.width)
             })
             .filter(updatedHead => {
                 return !this.body.some(segment =>

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { MoveResponse, GameState, Move } from '@/types'
-import Oracle from '../classes/Oracle'
+import Simulator from '../classes/Simulator'
 import Scenario from '@/snakes/dog-nose/classes/Scenario'
 import Snake from '@/classes/Snake'
 import isSamePoint from '@/utils/is-same-point'
@@ -8,6 +8,7 @@ import strategies from '../strategies'
 import AspGame from '@/snakes/asp/classes/Game'
 import chalk from 'chalk'
 import Game from '../classes/Game'
+import Controller from '../classes/Controller'
 
 const NETWORK_BUFFER = 250
 
@@ -15,12 +16,31 @@ async function move(
     request: Request<{}, MoveResponse, GameState>,
     response: Response<MoveResponse>
 ) {
+    const state = request.body
+
+    let game = Controller.getGame(state.game.id)
+
+    if (!game) {
+        console.error(
+            'ERROR - Attempting to move with a game that does not exist',
+            state.game.id
+        )
+        game = new Game(state)
+
+        game.start()
+    }
+
+    const move = await game.move(state)
+
+    console.log('Move', state.turn, move)
+    response.status(200).send({
+        move
+    })
+
     const startTime = new Date().getTime()
 
     initializeOracle(request.body)
-    const oracleDone = new Promise(res => Oracle.notifyWhenDone(res))
-
-    const gameState = request.body
+    const oracleDone = new Promise(res => Simulator.notifyWhenDone(res))
 
     const game = new AspGame(gameState)
 
@@ -55,18 +75,18 @@ async function move(
 
     const endTime = new Date().getTime()
 
-    let oracleGame = Oracle.getGame(game.id)
+    let oracleGame = Simulator.getGame(game.id)
 
     if (!oracleGame) {
-        Oracle.addGame(new Game(gameState))
-        oracleGame = Oracle.getGame(game.id)
+        Simulator.addGame(new Game(gameState))
+        oracleGame = Simulator.getGame(game.id)
         console.log(
             game.turn,
             chalk.bgWhite.black(resolvedMove),
             'Oracle does not have this game, recreating!'
         )
     }
-    const odds = Oracle.getGame(game.id).scenario.moveOdds
+    const odds = Simulator.getGame(game.id).scenario.moveOdds
     const resolvedMoveOdds = odds
         ? odds.find(o => o.move === resolvedMove)
         : null
@@ -74,10 +94,10 @@ async function move(
     console.log(
         game.turn,
         chalk.bgWhite.black(resolvedMove),
-        Oracle.isDone
+        Simulator.isDone
             ? 'Oracle is done'
-            : `Timeout reached, ${Oracle.workQueue.length} remaining, ${
-                  Oracle.workCount
+            : `Timeout reached, ${Simulator.workQueue.length} remaining, ${
+                  Simulator.workCount
               } done`,
         endTime - startTime + 'ms',
         odds
@@ -97,13 +117,13 @@ async function move(
 }
 
 function initializeOracle(state: GameState) {
-    const game = Oracle.getGame(state.game.id)
+    const game = Simulator.getGame(state.game.id)
 
     if (!game) {
         console.error("ERROR - Can't find this game in oracle?")
         console.log('--', state.game.id)
-        console.log('--', Oracle.runningGames)
-        console.log('--', Oracle.games.map(g => g.id))
+        console.log('--', Simulator.runningGames)
+        console.log('--', Simulator.games.map(g => g.id))
 
         return
     }
@@ -133,7 +153,7 @@ function initializeOracle(state: GameState) {
         game.height
     )
 
-    Oracle.updateBaseScenario(scenario)
+    Simulator.updateBaseScenario(scenario)
 }
 
 export default move
