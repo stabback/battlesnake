@@ -4,6 +4,7 @@ import asp from './asp'
 import bushmaster from './bushmaster'
 import catEyed from './cat-eyed'
 import dogNose from './dog-nose'
+import eggEater from './egg-eater'
 
 const router = express.Router()
 
@@ -12,5 +13,6 @@ router.use('/asp', asp)
 router.use('/bushmaster', bushmaster)
 router.use('/cat-eyed', catEyed)
 router.use('/dog-nose', dogNose)
+router.use('/egg-eater', dogNose)
 
 export default router
