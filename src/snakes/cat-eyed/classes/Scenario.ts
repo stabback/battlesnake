@@ -39,7 +39,7 @@ class Scenario {
 
   public get age(): number {
     if (this.parent) {
-      return this.parent.age + 1
+        return this.parent.age + 1
     }
 
     return 1
@@ -51,33 +51,33 @@ class Scenario {
 
   public get outcomeByMove(): Partial<OutcomeByMove> {
     if (!this.children || !this.player) {
-      return {}
+        return {}
     }
 
     return this.children.reduce((acc: Partial<OutcomeByMove>, child: Scenario) => {
-      const currentOutcome: Outcome = acc[child.move] ? {
+        const currentOutcome: Outcome = acc[child.move] ? {
         ...acc[child.move]
-      } : {
-          win: 0,
-          lose: 0,
-          unknown: 0
+        } : {
+            win: 0,
+            lose: 0,
+            unknown: 0
         }
 
-      return {
+        return {
         ...acc,
         [child.move]: {
-          win: child.outcome.win + currentOutcome.win,
-          lose: child.outcome.lose + currentOutcome.lose,
-          unknown: child.outcome.unknown + currentOutcome.unknown
+            win: child.outcome.win + currentOutcome.win,
+            lose: child.outcome.lose + currentOutcome.lose,
+            unknown: child.outcome.unknown + currentOutcome.unknown
         }
-      }
+        }
     }, {})
   }
 
   public get moveOdds(): { move: Move, odds: number }[] {
     return Object.keys(this.outcomeByMove).map((move: Move) => ({
-      move,
-      odds: (this.outcomeByMove[move].lose / (this.outcomeByMove[move].lose + this.outcomeByMove[move].win + this.outcomeByMove[move].unknown))
+        move,
+        odds: (this.outcomeByMove[move].lose / (this.outcomeByMove[move].lose + this.outcomeByMove[move].win + this.outcomeByMove[move].unknown))
     })).sort((a, b) => a.odds - b.odds)
   }
 
@@ -99,42 +99,42 @@ class Scenario {
 
 
     this.id = crypto.createHash('sha1').update(JSON.stringify({
-      player, enemies, food, ate
+        player, enemies, food, ate
     })).digest('base64')
 
     if (!player) {
-      this.outcome.lose = 1
+        this.outcome.lose = 1
     } else if (enemies.length === 0) {
-      this.outcome.win = 1
+        this.outcome.win = 1
     } else {
 
-      const snakes = [player, ...enemies]
+        const snakes = [player, ...enemies]
 
-      const likelyNextHeadPositions = snakes.map(snake => {
+        const likelyNextHeadPositions = snakes.map(snake => {
 
         const possiblePositions = snake.possibleNextHeadPositions
 
         const possibleSurvivalPositions = possiblePositions.filter(point => snakes.every(s => {
-          const bodyWithoutTail = s.body.slice(0, s.body.length - 1)
-          return !bodyWithoutTail.some(segment => isSamePoint(point, segment))
+            const bodyWithoutTail = s.body.slice(0, s.body.length - 1)
+            return !bodyWithoutTail.some(segment => isSamePoint(point, segment))
         }))
 
         // If there are no survival positions, just assume up
         if (possibleSurvivalPositions.length === 0) {
-          possibleSurvivalPositions.push(applyMoveToPoint(snake.head, 'up'))
+            possibleSurvivalPositions.push(applyMoveToPoint(snake.head, 'up'))
         }
 
         // Adds the snake ID to help track it
         return possibleSurvivalPositions.map(point => ({ ...point, id: snake.id }))
-      })
+        })
 
-      this.possibilities = fastCartesian(likelyNextHeadPositions) as Possibilities;
+        this.possibilities = fastCartesian(likelyNextHeadPositions) as Possibilities;
 
-      this.outcome.unknown = 1
+        this.outcome.unknown = 1
     }
 
     if (this.parent) {
-      Controller.addWorkItem(this)
+        Controller.addWorkItem(this)
     }
   }
 
@@ -142,15 +142,15 @@ class Scenario {
     if (!this.children || this.children.length === 0) return;
 
     const newOutcome: Outcome = {
-      win: 0,
-      lose: 0,
-      unknown: 0
+        win: 0,
+        lose: 0,
+        unknown: 0
     }
 
     this.children.forEach(child => {
-      newOutcome.win = newOutcome.win + child.outcome.win
-      newOutcome.lose = newOutcome.lose + child.outcome.lose
-      newOutcome.unknown = newOutcome.unknown + child.outcome.unknown
+        newOutcome.win = newOutcome.win + child.outcome.win
+        newOutcome.lose = newOutcome.lose + child.outcome.lose
+        newOutcome.unknown = newOutcome.unknown + child.outcome.unknown
     })
 
     newOutcome.win = newOutcome.win / this.children.length
@@ -160,7 +160,7 @@ class Scenario {
     this.outcome = newOutcome
 
     if (this.parent) {
-      this.parent.resolveChildOutcome()
+        this.parent.resolveChildOutcome()
     }
   }
 
@@ -176,8 +176,8 @@ class Scenario {
 
     this.children = this.possibilities.map(combination => {
 
-      // Get a list of all new snakes.
-      const newSnakes: Snake[] = combination.map(newLocation => {
+        // Get a list of all new snakes.
+        const newSnakes: Snake[] = combination.map(newLocation => {
         const { id, ...newHead } = newLocation;
 
         const isEating = this.food.some(food => isSamePoint(food, newHead))
@@ -188,38 +188,38 @@ class Scenario {
 
 
         if (isEating) {
-          newSnake.health = 80;
+            newSnake.health = 80;
         } else {
-          newSnake.health = newSnake.health - 1
+            newSnake.health = newSnake.health - 1
         }
 
         return newSnake
-      })
+        })
 
-      const move: Move = getMoveFromPoints(this.player.head, newSnakes.find(s => s.id === this.player.id).head)
+        const move: Move = getMoveFromPoints(this.player.head, newSnakes.find(s => s.id === this.player.id).head)
 
-      // Remove any ate food, and pass the new ate status on
-      // TODO this should be done in the prior loop
-      const newAte: string[] = [];
-      const newFood = this.food.filter(food => !newSnakes.some(snake => {
+        // Remove any ate food, and pass the new ate status on
+        // TODO this should be done in the prior loop
+        const newAte: string[] = [];
+        const newFood = this.food.filter(food => !newSnakes.some(snake => {
         const willEat = isSamePoint(snake.head, food);
         if (willEat) {
-          newAte.push(snake.id)
+            newAte.push(snake.id)
         }
         return willEat
-      }));
+        }));
 
-      // Remove any snakes that have collided with another snake
-      const survivedSnakes = newSnakes.filter(snake => {
+        // Remove any snakes that have collided with another snake
+        const survivedSnakes = newSnakes.filter(snake => {
         const diedToCollision = newSnakes.filter(testSnake => testSnake.id !== snake.id).some(testSnake => {
-          // Have these snakes collided?
-          if (isSamePoint(snake.head, testSnake.head)) {
+            // Have these snakes collided?
+            if (isSamePoint(snake.head, testSnake.head)) {
             // If this snake is longer, it has survived.  If it's the player, ensure we track the killBonus state
             return  (snake.length <= testSnake.length)
-          }
+            }
 
-          // If this snake is in a body of another snake, it has died
-          return testSnake.body.some(segment => isSamePoint(segment, snake.head))
+            // If this snake is in a body of another snake, it has died
+            return testSnake.body.some(segment => isSamePoint(segment, snake.head))
         })
 
         const isOnBoard = isPointOnBoard(snake.head, this.height, this.width);
@@ -227,11 +227,11 @@ class Scenario {
         const starved = snake.health <= 0
 
         return (!diedToCollision && !starved && isOnBoard);
-      })
+        })
 
-      const newPlayer = survivedSnakes.find(snake => snake.id === this.player.id);
+        const newPlayer = survivedSnakes.find(snake => snake.id === this.player.id);
 
-      return new Scenario(
+        return new Scenario(
         newPlayer,
         survivedSnakes.filter(snake => snake.id !== this.player.id),
         newFood,
@@ -241,7 +241,7 @@ class Scenario {
         this.height,
         this,
         move
-      )
+        )
     })
 
     this.resolveChildOutcome();

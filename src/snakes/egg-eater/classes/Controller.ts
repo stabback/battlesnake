@@ -1,9 +1,9 @@
-import Oracle from "./Oracle";
+import Oracle from './Oracle'
 
 class ControllerClass {
-  public oracle = Oracle
+    public oracle = Oracle
 }
 
-const Controller = new ControllerClass();
+const Controller = new ControllerClass()
 
 export default Controller

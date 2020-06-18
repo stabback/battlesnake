@@ -1,74 +1,72 @@
-import pathfinder, { DiagonalMovement } from 'pathfinding';
+import pathfinder, { DiagonalMovement } from 'pathfinding'
 
-
-import Game from '@/snakes/asp/classes/Game';
-import { Move, Point } from '@/types';
-
+import Game from '@/snakes/asp/classes/Game'
+import { Move, Point } from '@/types'
 
 function attack(game: Game): Move | null {
+    // Attack pattern CLUB - identify all of the enemy snakes possible moves.  Pathfind to the nearest.
+    const grid = new pathfinder.Grid(game.board.width, game.board.height)
 
+    game.board.points.forEach(point => {
+        grid.setWalkableAt(point.x, point.y, point.safe)
+    })
 
-  // Attack pattern CLUB - identify all of the enemy snakes possible moves.  Pathfind to the nearest.
-  const grid = new pathfinder.Grid(game.board.width, game.board.height);
+    grid.setWalkableAt(game.player.head.x, game.player.head.y, true)
 
-  game.board.points.forEach(point => {
-    grid.setWalkableAt(point.x, point.y, point.safe)
-  });
+    const finder = new pathfinder.AStarFinder({
+        diagonalMovement: DiagonalMovement.Never
+    })
 
-  grid.setWalkableAt(game.player.head.x, game.player.head.y, true);
+    // Find a path to every food on the board
+    const paths = game.board.enemySnakes
+        .reduce((acc, snake): Point[] => {
+            return [...acc, ...snake.possibleNextHeadPositions]
+        }, [])
+        .map((point: Point) => {
+            const thisGrid = grid.clone()
+            return finder.findPath(
+                game.player.head.x,
+                game.player.head.y,
+                point.x,
+                point.y,
+                thisGrid
+            )
+        })
+        .filter(path => path && path.length)
 
+    if (!paths || paths.length === 0) {
+        return null
+    }
 
-  const finder = new pathfinder.AStarFinder({
-    diagonalMovement: DiagonalMovement.Never
-  });
+    const sortedPaths = paths.sort((a, b) => {
+        return a.length - b.length
+    })
 
-  // Find a path to every food on the board
-  const paths = game.board.enemySnakes.reduce((acc, snake): Point[] => {
-    return [
-      ...acc,
-      ...snake.possibleNextHeadPositions
-    ]
-  }, []).map((point: Point) => {
-    const thisGrid = grid.clone();
-    return finder.findPath(game.player.head.x, game.player.head.y, point.x, point.y, thisGrid);
-  }).filter(path => path && path.length)
+    const selectedPath = sortedPaths[0]
 
-  if (!paths || paths.length === 0) {
-    return null;
-  }
+    const nextPoint = selectedPath[1]
 
-  const sortedPaths = paths.sort((a, b) => {
-    return a.length - b.length;
-  });
+    if (!nextPoint) {
+        return null
+    }
 
+    const [nextX, nextY] = nextPoint
 
-  const selectedPath = sortedPaths[0];
+    if (nextX > game.player.head.x) {
+        return 'right'
+    }
 
-  const nextPoint = selectedPath[1];
+    if (nextX < game.player.head.x) {
+        return 'left'
+    }
 
-  if (!nextPoint) {
-    return null;
-  }
+    if (nextY < game.player.head.y) {
+        return 'down'
+    }
 
-  const [nextX, nextY] = nextPoint;
-
-
-  if (nextX > game.player.head.x) {
-    return 'right'
-  }
-
-  if (nextX < game.player.head.x) {
-    return 'left'
-  }
-
-  if (nextY < game.player.head.y) {
-    return 'down'
-  }
-
-  if (nextY > game.player.head.y) {
-    return 'up'
-  }
-
+    if (nextY > game.player.head.y) {
+        return 'up'
+    }
 }
 
 export default attack

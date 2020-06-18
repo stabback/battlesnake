@@ -1,7 +1,9 @@
 {
   "defaultSeverity": "error",
   "extends": [
-      "tslint:recommended"
+      "tslint:recommended",
+      "tslint-config-prettier",
+      "tslint-plugin-prettier"
   ],
   "jsRules": {},
   "rules": {
@@ -9,7 +11,15 @@
       "no-console": false,
       "semicolon": false,
       "arrow-parens": [true, "ban-single-arg-parens"],
-      "indent": [true, "spaces", 4]
+      "indent": [true, "spaces", 4],
+      "prettier": [
+        true,
+        {
+          "singleQuote": true,
+          "trailingComma": "none",
+          "tabWidth": 4,
+          "semi": false
+        }]
   },
   "rulesDirectory": []
 }

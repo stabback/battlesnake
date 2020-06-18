@@ -1,51 +1,50 @@
 export interface GameData {
-  id: string
-  timeout: number
+    id: string
+    timeout: number
 }
 
 export interface Point {
-  x: number
-  y: number
+    x: number
+    y: number
 }
 
 export interface SnakeData {
-  id: string
-  name: string
-  health: number
-  body: Point[]
-  head: Point
-  length: number
-  shout: string
+    id: string
+    name: string
+    health: number
+    body: Point[]
+    head: Point
+    length: number
+    shout: string
 }
 
 export interface BoardData {
-  height: number
-  width: number
-  food: Point[]
-  snakes: SnakeData[]
+    height: number
+    width: number
+    food: Point[]
+    snakes: SnakeData[]
 }
 
 export interface GameState {
-  game: GameData
-  turn: number
-  board: BoardData
-  you: SnakeData
+    game: GameData
+    turn: number
+    board: BoardData
+    you: SnakeData
 }
 
 // Info
 export interface InfoResponse {
-  apiversion: string
-  author: string
-  color: string
-  head: string
-  tail: string
+    apiversion: string
+    author: string
+    color: string
+    head: string
+    tail: string
 }
-
 
 // Move
 export type Move = 'up' | 'left' | 'right' | 'down'
 
 export interface MoveResponse {
-  move: Move
-  shout?: string
+    move: Move
+    shout?: string
 }

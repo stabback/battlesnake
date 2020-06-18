@@ -27,7 +27,7 @@ class ControllerClass {
     const game = this.getGame(id);
 
     if (!game) {
-      return;
+        return;
     }
 
     game.end();
@@ -43,15 +43,15 @@ class ControllerClass {
 
   public startLoop() {
     if (!this.run) {
-      this.run = true;
-      this.workLoop();
+        this.run = true;
+        this.workLoop();
     }
   }
 
   public workLoop() {
     if (this.run) {
-      this.doWork()
-      setTimeout(() => this.workLoop())
+        this.doWork()
+        setTimeout(() => this.workLoop())
     }
 
   }
@@ -59,8 +59,8 @@ class ControllerClass {
   public doWork() {
     const start = new Date().getTime();
     if (this.workQueue.length === 0) {
-      this.run = false;
-      return;
+        this.run = false;
+        return;
     }
     this.workCount = this.workCount + 1;
     const scenario = this.workQueue.shift();
@@ -72,10 +72,10 @@ class ControllerClass {
 
   public addWorkItem(scenario: Scenario) {
     if (scenario.age <= 7) {
-      this.workQueue.push(scenario)
-      this.startLoop();
+        this.workQueue.push(scenario)
+        this.startLoop();
     } else {
-      this.deferredWork.push(scenario)
+        this.deferredWork.push(scenario)
     }
   }
 
@@ -83,21 +83,21 @@ class ControllerClass {
     const game = this.getGame(scenario.gameId);
 
     if (game.scenario.id === scenario.id) {
-      return
+        return
     }
 
     const existingScenario = game.scenario.children?.find(child => child.id === scenario.id)
 
     if (existingScenario) {
-      game.scenario = existingScenario
+        game.scenario = existingScenario
     } else {
-      game.scenario = scenario
-      scenario.createChildren();
+        game.scenario = scenario
+        scenario.createChildren();
     }
 
     this.workQueue = [
-      ...this.workQueue.filter(s => isChild(s, game.scenario.id)),
-      ...this.deferredWork.filter(s => isChild(s, game.scenario.id))
+        ...this.workQueue.filter(s => isChild(s, game.scenario.id)),
+        ...this.deferredWork.filter(s => isChild(s, game.scenario.id))
     ]
 
     this.deferredWork = [];

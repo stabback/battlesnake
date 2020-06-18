@@ -27,7 +27,7 @@ async function move(request: Request<{}, MoveResponse, GameState>, response: Res
     const biggestEnemy = game.board.enemySnakes.sort((a, b) => b.body.length - a.body.length)[0];
 
     if (game.player.body.length >= (biggestEnemy.body.length + 2)) {
-      resolvedMove = strategies.attack(game)
+        resolvedMove = strategies.attack(game)
     }
   }
 
@@ -54,9 +54,9 @@ async function move(request: Request<{}, MoveResponse, GameState>, response: Res
     Oracle.addGame(new Game(gameState))
     oracleGame = Oracle.getGame(game.id)
     console.log(
-      game.turn,
-      chalk.bgWhite.black(resolvedMove),
-      "Oracle does not have this game, recreating!"
+        game.turn,
+        chalk.bgWhite.black(resolvedMove),
+        "Oracle does not have this game, recreating!"
     )
   }
   const odds = Oracle.getGame(game.id).scenario.moveOdds;

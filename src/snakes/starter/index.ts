@@ -10,40 +10,40 @@ router.post('/move', handleMove)
 router.post('/end', handleEnd)
 
 function handleIndex(request: Request, response: Response) {
-  const battlesnakeInfo = {
-    apiversion: '1',
-    author: '',
-    color: '#888888',
-    head: 'default',
-    tail: 'default'
-  }
-  response.status(200).json(battlesnakeInfo)
+    const battlesnakeInfo = {
+        apiversion: '1',
+        author: '',
+        color: '#888888',
+        head: 'default',
+        tail: 'default'
+    }
+    response.status(200).json(battlesnakeInfo)
 }
 
 function handleStart(request: Request, response: Response) {
-  const GameState = request.body
+    const GameState = request.body
 
-  console.log('START')
-  response.status(200).send('ok')
+    console.log('START')
+    response.status(200).send('ok')
 }
 
 function handleMove(request: Request, response: Response) {
-  const GameState = request.body
+    const GameState = request.body
 
-  const possibleMoves = ['up', 'down', 'left', 'right']
-  const move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)]
+    const possibleMoves = ['up', 'down', 'left', 'right']
+    const move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)]
 
-  console.log('MOVE: ' + move)
-  response.status(200).send({
-    move
-  })
+    console.log('MOVE: ' + move)
+    response.status(200).send({
+        move
+    })
 }
 
 function handleEnd(request: Request, response: Response) {
-  const GameState = request.body
+    const GameState = request.body
 
-  console.log('END')
-  response.status(200).send('ok')
+    console.log('END')
+    response.status(200).send('ok')
 }
 
 export default router

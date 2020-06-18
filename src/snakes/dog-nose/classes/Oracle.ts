@@ -38,7 +38,7 @@ class OracleClass {
     const game = this.getGame(id);
 
     if (!game) {
-      return;
+        return;
     }
 
     game.end();
@@ -54,15 +54,15 @@ class OracleClass {
 
   public startLoop() {
     if (!this.run) {
-      this.run = true;
-      this.workLoop();
+        this.run = true;
+        this.workLoop();
     }
   }
 
   public workLoop() {
     if (this.run) {
-      this.doWork()
-      setTimeout(() => this.workLoop())
+        this.doWork()
+        setTimeout(() => this.workLoop())
     }
 
   }
@@ -70,11 +70,11 @@ class OracleClass {
   public doWork() {
     const start = new Date().getTime();
     if (
-      this.workQueue.length === 0 ||
-      (start - this.runtime) > MAX_RUNTIME
+        this.workQueue.length === 0 ||
+        (start - this.runtime) > MAX_RUNTIME
     ) {
-      this.workDone()
-      return;
+        this.workDone()
+        return;
     }
 
     this.workCount = this.workCount + 1;
@@ -88,10 +88,10 @@ class OracleClass {
   public addWorkItem(scenario: Scenario) {
     this.runtime = new Date().getTime();
     if (scenario.age <= MAX_AGE) {
-      this.workQueue.push(scenario)
-      this.startLoop();
+        this.workQueue.push(scenario)
+        this.startLoop();
     } else {
-      this.deferredWork.push(scenario)
+        this.deferredWork.push(scenario)
     }
   }
 
@@ -99,21 +99,21 @@ class OracleClass {
     const game = this.getGame(scenario.gameId);
 
     if (game.scenario.id === scenario.id) {
-      return
+        return
     }
 
     const existingScenario = game.scenario.children?.find(child => child.id === scenario.id)
 
     if (existingScenario) {
-      game.scenario = existingScenario
+        game.scenario = existingScenario
     } else {
-      game.scenario = scenario
-      scenario.createChildren();
+        game.scenario = scenario
+        scenario.createChildren();
     }
 
     this.workQueue = [
-      ...this.workQueue.filter(s => isChild(s, game.scenario.id)),
-      ...this.deferredWork.filter(s => isChild(s, game.scenario.id))
+        ...this.workQueue.filter(s => isChild(s, game.scenario.id)),
+        ...this.deferredWork.filter(s => isChild(s, game.scenario.id))
     ]
 
     this.deferredWork = [];
@@ -128,9 +128,9 @@ class OracleClass {
 
   public notifyWhenDone(callback: () => void) {
     if (this.isDone) {
-      setTimeout(callback);
+        setTimeout(callback);
     } else {
-      this.callbacks.push(callback)
+        this.callbacks.push(callback)
     }
   }
 }
