@@ -2,3 +2,5 @@ runtime: nodejs
 env: flex
 resources:
   memory_gb: 4
+automatic_scaling:
+  max_num_instances: 6

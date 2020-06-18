@@ -3,6 +3,8 @@ import Scenario from '@/snakes/dog-nose/classes/Scenario';
 
 const MAX_AGE = 7
 
+const MAX_RUNTIME = 750;
+
 class OracleClass {
   public games: Game[] = [];
 
@@ -15,6 +17,8 @@ class OracleClass {
   public workCount = 0;
 
   public totalWorkTime = 0;
+
+  private runtime = 0;
 
   private callbacks: (() => void)[] = []
 
@@ -65,10 +69,14 @@ class OracleClass {
 
   public doWork() {
     const start = new Date().getTime();
-    if (this.workQueue.length === 0) {
+    if (
+      this.workQueue.length === 0 ||
+      (start - this.runtime) > MAX_RUNTIME
+    ) {
       this.workDone()
       return;
     }
+
     this.workCount = this.workCount + 1;
     const scenario = this.workQueue.shift();
 
@@ -78,6 +86,7 @@ class OracleClass {
   }
 
   public addWorkItem(scenario: Scenario) {
+    this.runtime = new Date().getTime();
     if (scenario.age <= MAX_AGE) {
       this.workQueue.push(scenario)
       this.startLoop();
