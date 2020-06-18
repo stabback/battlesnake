@@ -31,7 +31,7 @@ function scenario(request: Request<{}, string, {}, { scenarioArgs: string, child
       scenarioArgs.enemies.map(data => new Snake(data, scenarioArgs.width, scenarioArgs.height)),
       scenarioArgs.food,
       scenarioArgs.profile,
-      scenarioArgs.history,
+      scenarioArgs.history
     )
 
     scenarioInstance.createChildren();

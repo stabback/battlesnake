@@ -13,6 +13,6 @@ router.use('/asp', asp)
 router.use('/bushmaster', bushmaster)
 router.use('/cat-eyed', catEyed)
 router.use('/dog-nose', dogNose)
-router.use('/egg-eater', dogNose)
+router.use('/egg-eater', eggEater)
 
 export default router

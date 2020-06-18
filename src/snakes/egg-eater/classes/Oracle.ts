@@ -113,7 +113,7 @@ class OracleClass {
 
     this.workQueue = [
       ...this.workQueue.filter(s => isChild(s, game.scenario.id)),
-      ...this.deferredWork.filter(s => isChild(s, game.scenario.id)),
+      ...this.deferredWork.filter(s => isChild(s, game.scenario.id))
     ]
 
     this.deferredWork = [];
@@ -132,6 +132,17 @@ class OracleClass {
     } else {
       this.callbacks.push(callback)
     }
+  }
+
+  public reset() {
+    this.games = [];
+    this.run = false;
+    this.workQueue = [];
+    this.deferredWork = [];
+    this.workCount = 0;
+    this.totalWorkTime = 0;
+    this.runtime = 0;
+    this.callbacks = []
   }
 }
 

@@ -54,15 +54,15 @@ export interface RiskProfile {
 
 const normal: RiskProfile = {
   playerDead: {
-    impact: -9000,
+    impact: -9000
   },
 
   playerHealth: {
-    impact: 1,
+    impact: 1
   },
 
   enemyHealth: {
-    impact: -0.5,
+    impact: -0.5
   },
 
   relativeLength: {
@@ -72,7 +72,7 @@ const normal: RiskProfile = {
   },
 
   enemyCount: {
-    impact: -20,
+    impact: -20
   },
 
   smallSnakeProximity: {

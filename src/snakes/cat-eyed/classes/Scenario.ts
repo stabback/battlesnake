@@ -99,7 +99,7 @@ class Scenario {
 
 
     this.id = crypto.createHash('sha1').update(JSON.stringify({
-      player, enemies, food, ate,
+      player, enemies, food, ate
     })).digest('base64')
 
     if (!player) {

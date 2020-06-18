@@ -5,10 +5,11 @@
   ],
   "jsRules": {},
   "rules": {
-      "trailing-comma": [ false ],
+      "trailing-comma": [true, {"multiline": "never", "singleline": "never"}],
       "no-console": false,
       "semicolon": false,
-      "arrow-parens": [true, "ban-single-arg-parens"]
+      "arrow-parens": [true, "ban-single-arg-parens"],
+      "indent": [true, "spaces", 4]
   },
   "rulesDirectory": []
 }

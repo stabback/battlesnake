@@ -30,7 +30,7 @@ class Scenario {
     killBonus: 0,
     hungry: 0,
     starving: 0,
-    win: 0,
+    win: 0
   }
 
   /**

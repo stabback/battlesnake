@@ -113,7 +113,7 @@ class OracleClass {
 
     this.workQueue = [
       ...this.workQueue.filter(s => isChild(s, game.scenario.id)),
-      ...this.deferredWork.filter(s => isChild(s, game.scenario.id)),
+      ...this.deferredWork.filter(s => isChild(s, game.scenario.id))
     ]
 
     this.deferredWork = [];

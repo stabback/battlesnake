@@ -1,5 +1,5 @@
 import Scenario from "./Scenario"
-import { GameState, } from '@/types';
+import { GameState } from '@/types';
 import Snake from "@/classes/Snake";
 
 class Game {
