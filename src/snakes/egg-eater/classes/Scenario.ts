@@ -388,7 +388,8 @@ class Scenario {
 
         const biggestEnemy = (this.enemies || []).sort(
             (a, b) => b.body.length - a.body.length
-        )
+        )[0]
+
         if (biggestEnemy) {
             this.calculatedValues.playerIsDominant =
                 this.player.length - biggestEnemy.length >= 2

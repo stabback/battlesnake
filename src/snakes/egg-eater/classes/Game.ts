@@ -9,7 +9,10 @@ import isPointOnBoard from '@/utils/is-point-on-board'
 import strategies from '../strategies'
 import chalk from 'chalk'
 
-const DEFAULT_NETWORK_LATENCY = 150
+const DEFAULT_NETWORK_LATENCY: number = parseInt(
+    process.env.DEFAULT_NETWORK_LATENCY,
+    10
+)
 
 type strategies = 'pressure' | 'feed' | 'survive'
 
@@ -106,11 +109,13 @@ class Game {
     public async move(state: GameState, startTime: number): Promise<Move> {
         let strategy = ''
 
+        const log: (any)[][] = []
+
         const startingWorkDone = Controller.simulator.statistics.totalWorkDone
 
         this.turn = state.turn
-        console.log('--------')
-        console.log('[Move] start', this.turn)
+        log.push(['--------'])
+        log.push(['[Move] start', this.id, this.turn])
 
         // See if our move was accepted and adjust latency
         this.adjustLatency(state.you.head)
@@ -168,32 +173,32 @@ class Game {
             this.maxResponseTime - (new Date().getTime() - startTime)
 
         if (Controller.simulator.isRunning) {
-            console.log('-- Simulator running, waiting for the response...')
+            log.push(['-- Simulator running, waiting for the response...'])
             await Promise.race([
                 simulatorDone,
                 new Promise(res => setTimeout(res, timeout))
             ])
         }
 
-        console.log(
+        log.push([
             '-- Took',
             new Date().getTime() - startTime,
             'ms',
             timeout,
             this.maxResponseTime
-        )
+        ])
 
-        console.log('-- Our strategy recommends', move)
+        log.push(['-- Our strategy recommends', move])
 
         // Validate our move against the simulator
         if (move && this.currentScenario.children) {
-            console.log('-- Simulator is running, comparing results')
+            log.push(['-- Simulator is running, comparing results'])
             const outcome = this.currentScenario.outcomeByMove[move]
 
             if (!outcome) {
-                console.log(
+                log.push([
                     chalk.bgRed('Outcome for the specified move is not known!')
-                )
+                ])
                 if (
                     this.currentScenario.children &&
                     this.currentScenario.children.length > 0
@@ -203,26 +208,28 @@ class Game {
                 }
             } else if (outcome.lose > 0.3) {
                 strategy = 'simulator'
-                console.log(chalk.bgRed('Simulator intercepting, too risky!'))
+                log.push([chalk.bgRed('Simulator intercepting, too risky!')])
                 move = this.currentScenario.safestMove
             }
         } else if (!move) {
-            console.log(
+            log.push([
                 chalk.bgYellow(
                     '-- No move decided on.  Defaulting to the safest move'
                 )
-            )
+            ])
             move = this.currentScenario.safestMove
         }
-        console.log('-- Strategy used', strategy)
-        console.log('-- Resolving to', move)
-        console.log('-- Odds', this.currentScenario.outcomeByMove)
-        console.log(
+        log.push(['-- Strategy used', strategy])
+        log.push(['-- Resolving to', move])
+        log.push(['-- Odds', this.currentScenario.outcomeByMove])
+        log.push([
             '-- Work done this call',
             Controller.simulator.statistics.totalWorkDone - startingWorkDone
-        )
-        console.log('')
-        console.log('')
+        ])
+        log.push(['-- Work remaining', Controller.simulator.workQueue.length])
+        log.push([''])
+
+        log.forEach(line => console.log(...line))
 
         this.previousMove = move
 

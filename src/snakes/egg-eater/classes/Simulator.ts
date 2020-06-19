@@ -106,7 +106,21 @@ class Simulator {
      */
     public addWorkItem(scenario: Scenario) {
         if (scenario.age <= MAX_AGE) {
-            this.workQueue.push(scenario)
+            // If there are dead end scenarios, or scenarios where enemies or the player can only move one space, prioritize
+            if (
+                !scenario.enemies ||
+                scenario.enemies.length === 0 ||
+                scenario.enemies.some(
+                    enemy => enemy.possibleNextHeadPositions.length === 1
+                ) ||
+                !scenario.player ||
+                scenario.player.possibleNextHeadPositions.length === 1
+            ) {
+                this.workQueue.unshift(scenario)
+            } else {
+                // Otherwise, add to the end so breadth first search is
+                this.workQueue.push(scenario)
+            }
             this.runSimulator()
         } else {
             this.deferredWork.push(scenario)
