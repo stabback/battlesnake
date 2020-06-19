@@ -28,7 +28,6 @@
     "url": "https://github.com/stabback/battlesnake/issues"
   },
   "dependencies": {
-    "@airbnb/node-memwatch": "^2.0.0",
     "@google-cloud/datastore": "^6.0.0",
     "@types/body-parser": "^1.19.0",
     "@types/dotenv": "^8.2.0",

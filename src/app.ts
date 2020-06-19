@@ -16,21 +16,9 @@ import snakes from '@/snakes'
 import logs from '@/logger'
 import path from 'path'
 
-import memwatch from '@airbnb/node-memwatch'
 import prettyBytes from 'pretty-bytes'
 
-// import Logger from './logger/Logger'
-import chalk from 'chalk'
-
 dotenv.config()
-memwatch.on('stats', (stats: any) => {
-    console.log(
-        chalk.bgGreen.black(
-            'Total heap size',
-            prettyBytes(stats.total_heap_size)
-        )
-    )
-})
 
 const PORT = process.env.PORT || 3000
 
