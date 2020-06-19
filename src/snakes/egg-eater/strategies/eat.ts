@@ -29,8 +29,6 @@ function eat(scenario: Scenario): Move | null {
 
     const selectedPath = paths[0]
 
-    console.log('[EAT]', paths, selectedPath)
-
     const nextPoint = selectedPath[1]
 
     if (!nextPoint) {

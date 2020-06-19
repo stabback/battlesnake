@@ -13,6 +13,7 @@ function end(
 
     if (!game) {
         response.status(500).send('game not registered')
+        return
     }
 
     game.end()

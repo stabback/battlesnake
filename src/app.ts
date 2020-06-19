@@ -5,6 +5,10 @@ import { install } from 'source-map-support'
 install()
 process.on('unhandledRejection', console.log)
 
+console.log('*********')
+console.log('app.js running')
+console.log('*********')
+
 import dotenv from 'dotenv'
 import bodyParser from 'body-parser'
 import express from 'express'

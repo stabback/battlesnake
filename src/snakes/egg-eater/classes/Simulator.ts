@@ -66,7 +66,7 @@ class Simulator {
     public workLoop() {
         if (this.isRunning) {
             this.doWork()
-            setTimeout(() => this.workLoop())
+            setTimeout(() => this.workLoop(), 1)
         }
     }
 
