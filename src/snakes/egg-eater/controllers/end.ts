@@ -11,8 +11,11 @@ function end(
 
     const game = Controller.getGame(state.game.id)
 
-    game.end()
+    if (!game) {
+        response.status(500).send('game not registered')
+    }
 
+    game.end()
     response.status(200).send('ok')
 }
 

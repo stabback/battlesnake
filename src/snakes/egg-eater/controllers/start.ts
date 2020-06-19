@@ -18,6 +18,11 @@ function start(
 
     game.start()
 
+    console.log('')
+    console.log('=================')
+    console.log('[Start]', game.id)
+    console.log('=================')
+    console.log('')
     response.status(200).send('ok')
 }
 

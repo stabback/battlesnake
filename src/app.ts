@@ -15,7 +15,7 @@ import path from 'path'
 import memwatch from '@airbnb/node-memwatch'
 import prettyBytes from 'pretty-bytes'
 
-import Logger from './logger/Logger'
+// import Logger from './logger/Logger'
 import chalk from 'chalk'
 
 dotenv.config()
@@ -31,6 +31,7 @@ memwatch.on('stats', (stats: any) => {
 const PORT = process.env.PORT || 3000
 
 async function start() {
+    console.log('Starting up app...')
     const app = express()
     app.use(bodyParser.json())
 
@@ -40,10 +41,10 @@ async function start() {
     app.set('views', path.join(__dirname, 'views'))
     app.set('view engine', 'ejs')
 
-    await Logger.restore()
+    // await Logger.restore()
 
     app.listen(PORT, () =>
-        console.log(`Example app listening at http://127.0.0.1:${PORT}`)
+        console.log(`-- App listening at http://127.0.0.1:${PORT}`)
     )
 }
 

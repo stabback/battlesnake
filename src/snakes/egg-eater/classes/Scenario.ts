@@ -8,6 +8,8 @@ import isPointOnBoard from '@/utils/is-point-on-board'
 import applyMoveToPoint from '@/utils/apply-move-to-point'
 import getMoveFromPoints from '@/utils/get-move-from-points'
 import Game from './Game'
+import { Grid } from 'pathfinding'
+import Pathfinder from '@/utils/find-path'
 
 /**
  * Describes the chances this scenario has of different results
@@ -21,6 +23,10 @@ interface Outcome {
 
     /** Chance this scenario results in a win or a loss, we can't see that far ahead yet */
     unknown: number
+}
+
+interface DescribedPoint extends Point {
+    safe: boolean
 }
 
 /** A list of the the next potential snake head positions */
@@ -45,6 +51,26 @@ class Scenario {
 
     /** All likely future snake head states */
     public possibilities: Possibilities = []
+
+    /**
+     * Snakes used for calculations.  Calculated by itself and only available
+     * on the parent.
+     */
+    public calculatedValues: {
+        snakes: Snake[]
+        smallerSnakes: Snake[]
+        threatSnakes: Snake[]
+        playerIsDominant: boolean
+        points: DescribedPoint[]
+        grid: Grid
+    } = {
+        snakes: null,
+        smallerSnakes: null,
+        threatSnakes: null,
+        playerIsDominant: null,
+        points: null,
+        grid: null
+    }
 
     /** How many scenarios away from the base scenario this scenario is */
     public get age(): number {
@@ -148,8 +174,10 @@ class Scenario {
             .createHash('sha1')
             .update(
                 JSON.stringify({
-                    player,
-                    enemies,
+                    player: player ? player.data.body : null,
+                    enemies: enemies
+                        ? enemies.map(enemy => enemy.data.body)
+                        : null,
                     food,
                     ate
                 })
@@ -338,6 +366,61 @@ class Scenario {
         })
 
         this.calculateOutcome()
+    }
+
+    /**
+     * Should only be called on the parent scenario.  Calculates shortcuts
+     * so that they aren't continually recalculated.
+     */
+    public calculateSnakeShortcuts() {
+        this.calculatedValues.snakes = [this.player, ...(this.enemies || [])]
+            .filter(snake => snake)
+            .sort((a, b) => b.body.length - a.body.length)
+
+        this.calculatedValues.smallerSnakes = this.enemies.filter(
+            snake => snake.body.length < this.player.body.length
+        )
+        this.calculatedValues.threatSnakes = this.enemies.filter(
+            snake => snake.body.length >= this.player.body.length
+        )
+
+        this.calculatedValues.playerIsDominant =
+            this.calculatedValues.snakes[0] === this.player
+
+        this.calculatedValues.points = []
+
+        for (let i = 0; i < this.game.height * this.game.width; i++) {
+            const point = {
+                x: i % this.game.width,
+                y: Math.floor(i / this.game.height)
+            }
+
+            const safe = this.game.isPointSafe(point)
+
+            this.calculatedValues.points.push({
+                ...point,
+                safe
+            })
+        }
+
+        this.calculatedValues.grid = Pathfinder.createGrid(
+            this.game.width,
+            this.game.height
+        )
+
+        this.calculatedValues.points.forEach(point => {
+            this.calculatedValues.grid.setWalkableAt(
+                point.x,
+                point.y,
+                point.safe
+            )
+        })
+
+        this.calculatedValues.grid.setWalkableAt(
+            this.player.head.x,
+            this.player.head.y,
+            true
+        )
     }
 }
 

@@ -1,23 +1,19 @@
-import { Move } from '@/types'
-import Scenario from '../classes/Scenario'
+import pathfinder, { DiagonalMovement } from 'pathfinding'
+
+import { Move, Point } from '@/types'
 import Pathfinder from '@/utils/find-path'
+import Scenario from '../classes/Scenario'
 import getMoveFromPoints from '@/utils/get-move-from-points'
 
-function eat(scenario: Scenario): Move | null {
-    if (!scenario.food || scenario.food.length === 0) {
-        return null
-    }
-
+function pressure(scenario: Scenario): Move | null {
     // Find a path to every food on the board
-    const paths = scenario.food
-        .map(food => {
+    const paths = scenario.enemies
+        .reduce((acc, snake): Point[] => {
+            return [...acc, ...snake.possibleNextHeadPositions]
+        }, [])
+        .map((point: Point) => {
             const thisGrid = scenario.calculatedValues.grid.clone()
-
-            return Pathfinder.find(
-                { x: scenario.player.head.x, y: scenario.player.head.y },
-                { x: food.x, y: food.y },
-                thisGrid
-            )
+            return Pathfinder.find(scenario.player.head, point, thisGrid)
         })
         .sort((a, b) => {
             return a.length - b.length
@@ -28,8 +24,6 @@ function eat(scenario: Scenario): Move | null {
     }
 
     const selectedPath = paths[0]
-
-    console.log('[EAT]', paths, selectedPath)
 
     const nextPoint = selectedPath[1]
 
@@ -42,4 +36,4 @@ function eat(scenario: Scenario): Move | null {
     return getMoveFromPoints(scenario.player.head, { x: nextX, y: nextY })
 }
 
-export default eat
+export default pressure

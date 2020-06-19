@@ -1,6 +1,7 @@
 import Game from './Game'
 import Scenario from './Scenario'
 import Controller from './Controller'
+import chalk from 'chalk'
 
 /** Maximum distance in the future to attempt to resolve scenarios */
 const MAX_AGE = 7
@@ -90,7 +91,9 @@ class Simulator {
         // Always work with the first item, FIFO to perform a breadth-first search
         const scenario = this.workQueue.shift()
         scenario.createChildren()
-        scenario.children.forEach(child => this.addWorkItem(child))
+        if (scenario.children) {
+            scenario.children.forEach(child => this.addWorkItem(child))
+        }
 
         const end = new Date().getTime()
         const workTime = end - start
@@ -112,9 +115,10 @@ class Simulator {
     }
 
     /**
-     * Change the root scenario for the simulator.  This will
+     * Change the root scenario for the simulator.  Also updates
+     * the game, so this should probably exist on the game instead somehow
      *
-     * TODO - this probably should exist in some form on the scenario - coming back
+     * @todo Fix this dance.  Figure out where this should live.
      * @param scenario The new root scenario
      */
     public updateRootScenario(scenario: Scenario) {
@@ -133,17 +137,32 @@ class Simulator {
             : null
 
         if (existingScenario) {
+            console.log(
+                chalk.dim(
+                    'New root scenario is a known scenario',
+                    existingScenario.id
+                )
+            )
             game.currentScenario = existingScenario
+            game.currentScenario.parent = null
         } else {
+            console.log(chalk.dim('New root scenario is an unknown scenario'))
             game.currentScenario = scenario
             scenario.createChildren()
+            if (scenario.children) {
+                scenario.children.forEach(child => this.addWorkItem(child))
+            }
         }
 
+        game.currentScenario.calculateSnakeShortcuts()
+
         this.workQueue = [
-            ...this.workQueue.filter(s => isChild(s, game.currentScenario.id)),
-            ...this.deferredWork.filter(s =>
-                isChild(s, game.currentScenario.id)
-            )
+            ...this.workQueue
+                .filter(s => s)
+                .filter(s => isChild(s, game.currentScenario.id)),
+            ...this.deferredWork
+                .filter(s => s)
+                .filter(s => isChild(s, game.currentScenario.id))
         ]
 
         this.deferredWork = []
@@ -194,6 +213,10 @@ class Simulator {
  */
 function isChild(scenario: Scenario, parentId: string) {
     let subject = scenario
+
+    if (!subject.parent) {
+        return true
+    }
 
     do {
         subject = subject.parent
