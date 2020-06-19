@@ -19,6 +19,7 @@ function eat(scenario: Scenario): Move | null {
                 thisGrid
             )
         })
+        .filter(path => path && path.length > 0)
         .sort((a, b) => {
             return a.length - b.length
         })

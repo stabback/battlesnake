@@ -1,4 +1,3 @@
-import Game from './Game'
 import Scenario from './Scenario'
 import Controller from './Controller'
 import chalk from 'chalk'
@@ -148,6 +147,9 @@ class Simulator {
         } else {
             console.log(chalk.dim('New root scenario is an unknown scenario'))
             game.currentScenario = scenario
+        }
+
+        if (!game.currentScenario.children && scenario.enemies.length < 4) {
             scenario.createChildren()
             if (scenario.children) {
                 scenario.children.forEach(child => this.addWorkItem(child))

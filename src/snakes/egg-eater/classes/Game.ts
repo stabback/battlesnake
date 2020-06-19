@@ -9,7 +9,7 @@ import isPointOnBoard from '@/utils/is-point-on-board'
 import strategies from '../strategies'
 import chalk from 'chalk'
 
-const DEFAULT_NETWORK_LATENCY = 125
+const DEFAULT_NETWORK_LATENCY = 150
 
 type strategies = 'pressure' | 'feed' | 'survive'
 
@@ -63,7 +63,9 @@ class Game {
             this
         )
 
-        this.currentScenario.createChildren()
+        if (enemies.length < 4) {
+            this.currentScenario.createChildren()
+        }
 
         this.currentScenario.calculateSnakeShortcuts()
     }
@@ -109,6 +111,7 @@ class Game {
         this.turn = state.turn
         console.log('--------')
         console.log('[Move] start', this.turn)
+
         // See if our move was accepted and adjust latency
         this.adjustLatency(state.you.head)
 
@@ -164,10 +167,13 @@ class Game {
         const timeout =
             this.maxResponseTime - (new Date().getTime() - startTime)
 
-        await Promise.race([
-            simulatorDone,
-            new Promise(res => setTimeout(res, timeout))
-        ])
+        if (Controller.simulator.isRunning) {
+            console.log('-- Simulator running, waiting for the response...')
+            await Promise.race([
+                simulatorDone,
+                new Promise(res => setTimeout(res, timeout))
+            ])
+        }
 
         console.log(
             '-- Took',
@@ -177,32 +183,40 @@ class Game {
             this.maxResponseTime
         )
 
+        console.log('-- Our strategy recommends', move)
+
         // Validate our move against the simulator
-        if (move) {
+        if (move && this.currentScenario.children) {
+            console.log('-- Simulator is running, comparing results')
             const outcome = this.currentScenario.outcomeByMove[move]
 
             if (!outcome) {
-                strategy = 'simulator'
                 console.log(
-                    chalk.bgRed('Outcome is not known!'),
-                    move,
-                    this.currentScenario.outcomeByMove
+                    chalk.bgRed('Outcome for the specified move is not known!')
                 )
-                move = this.currentScenario.safestMove
+                if (
+                    this.currentScenario.children &&
+                    this.currentScenario.children.length > 0
+                ) {
+                    strategy = 'simulator'
+                    move = this.currentScenario.safestMove
+                }
             } else if (outcome.lose > 0.3) {
                 strategy = 'simulator'
-                console.log(
-                    chalk.bgRed('Simulator intercepting, too risky!'),
-                    move,
-                    this.currentScenario.outcomeByMove
-                )
+                console.log(chalk.bgRed('Simulator intercepting, too risky!'))
                 move = this.currentScenario.safestMove
             }
-        } else {
+        } else if (!move) {
+            console.log(
+                chalk.bgYellow(
+                    '-- No move decided on.  Defaulting to the safest move'
+                )
+            )
             move = this.currentScenario.safestMove
         }
         console.log('-- Strategy used', strategy)
         console.log('-- Resolving to', move)
+        console.log('-- Odds', this.currentScenario.outcomeByMove)
         console.log(
             '-- Work done this call',
             Controller.simulator.statistics.totalWorkDone - startingWorkDone

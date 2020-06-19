@@ -8,11 +8,6 @@ import eggEater from './egg-eater'
 
 const router = express.Router()
 
-router.use('/starter', starter)
-router.use('/asp', asp)
-router.use('/bushmaster', bushmaster)
-router.use('/cat-eyed', catEyed)
-router.use('/dog-nose', dogNose)
 router.use('/egg-eater', eggEater)
 
 export default router

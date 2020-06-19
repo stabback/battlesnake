@@ -15,6 +15,7 @@ function pressure(scenario: Scenario): Move | null {
             const thisGrid = scenario.calculatedValues.grid.clone()
             return Pathfinder.find(scenario.player.head, point, thisGrid)
         })
+        .filter(path => path && path.length > 0)
         .sort((a, b) => {
             return a.length - b.length
         })

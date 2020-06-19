@@ -384,8 +384,15 @@ class Scenario {
             snake => snake.body.length >= this.player.body.length
         )
 
-        this.calculatedValues.playerIsDominant =
-            this.calculatedValues.snakes[0] === this.player
+        this.calculatedValues.playerIsDominant = false
+
+        const biggestEnemy = (this.enemies || []).sort(
+            (a, b) => b.body.length - a.body.length
+        )
+        if (biggestEnemy) {
+            this.calculatedValues.playerIsDominant =
+                this.player.length - biggestEnemy.length >= 2
+        }
 
         this.calculatedValues.points = []
 
