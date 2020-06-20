@@ -2,6 +2,7 @@ import parseBoardArt from '../../../debug/parse-board-art'
 import { GameState } from '../../../types'
 import Game from '../classes/Game'
 import drawBoard from '../../../debug/draw-board'
+import Controller from '../classes/Controller'
 /*
 ...........
 ...........
@@ -17,17 +18,17 @@ import drawBoard from '../../../debug/draw-board'
  */
 
 const art = `
-..rrrrd.Brd
-..ulllrAull
-.....u.....
 ...........
 ...........
-...........
-...........
-...........
-...........
-...........
-...........
+.....Bll..
+.......ul..
+........ul.
+.........u.
+....d..rdu@
+..@.rdruru.
+.....rrrrrd
+......dllll
+...@..A.@.@
 `
 
 async function main() {
@@ -59,6 +60,18 @@ async function main() {
     game.start()
 
     await game.move(gameState, new Date().getTime())
+
+    console.log('Work queue is', Controller.simulator.workQueue.length)
+
+    let min = 9999
+
+    Controller.simulator.workQueue.forEach(item => {
+        if (item.age < min) {
+            min = item.age
+        }
+    })
+
+    console.log('Minium left is ', min)
 
     game.end()
 }

@@ -9,6 +9,7 @@ import applyMoveToPoint from '@/utils/apply-move-to-point'
 import getMoveFromPoints from '@/utils/get-move-from-points'
 import Game from './Game'
 import { Grid } from 'pathfinding'
+import drawBoard from '../../../debug/draw-board'
 import Pathfinder from '@/utils/find-path'
 
 /**
@@ -336,20 +337,26 @@ class Scenario {
 
             // Remove any snakes that have collided with another snake
             const survivedSnakes = newSnakes.filter(snake => {
-                const diedToCollision = newSnakes
-                    .filter(testSnake => testSnake.id !== snake.id)
-                    .some(testSnake => {
-                        // Have these snakes collided?
-                        if (isSamePoint(snake.head, testSnake.head)) {
-                            // If this snake is longer, it has survived.  If it's the player, ensure we track the killBonus state
-                            return snake.length <= testSnake.length
-                        }
+                const diedToCollision = newSnakes.some(testSnake => {
+                    // Have these snakes collided?
+                    if (
+                        isSamePoint(snake.head, testSnake.head) &&
+                        snake.id !== testSnake.id
+                    ) {
+                        // If this snake is longer, it has survived.  If it's the player, ensure we track the killBonus state
+                        return snake.length <= testSnake.length
+                    }
 
-                        // If this snake is in a body of another snake, it has died
-                        return testSnake.body.some(segment =>
-                            isSamePoint(segment, snake.head)
-                        )
-                    })
+                    let testSegments = [...testSnake.body]
+                    if (snake.id === testSnake.id) {
+                        testSegments = testSegments.slice(1)
+                    }
+
+                    // If this snake is in a body of another snake, it has died
+                    return testSegments.some(segment =>
+                        isSamePoint(segment, snake.head)
+                    )
+                })
 
                 const isOnBoard = isPointOnBoard(
                     snake.head,
