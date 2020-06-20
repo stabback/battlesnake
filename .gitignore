@@ -6,6 +6,8 @@
 .vscode
 node_modules/
 dist
+Archive.zip
+
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
