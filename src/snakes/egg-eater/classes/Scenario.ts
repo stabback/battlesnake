@@ -249,17 +249,29 @@ class Scenario {
             unknown: 0
         }
 
-        // Add the outcome for all children together
-        this.children.forEach(child => {
-            newOutcome.win = newOutcome.win + child.outcome.win
-            newOutcome.lose = newOutcome.lose + child.outcome.lose
-            newOutcome.unknown = newOutcome.unknown + child.outcome.unknown
-        })
+        // If we can only do one move, assume the worst case child scenario to avoid
+        // putting us in a scenario that is a no-win
+        if (this.possibleMoves.length === 1) {
+            const worstChild = this.children.sort(
+                (a, b) => b.outcome.lose - a.outcome.lose
+            )[0]
 
-        // Average out all outcomes
-        newOutcome.win = newOutcome.win / this.children.length
-        newOutcome.lose = newOutcome.lose / this.children.length
-        newOutcome.unknown = newOutcome.unknown / this.children.length
+            newOutcome.win = worstChild.outcome.win
+            newOutcome.lose = worstChild.outcome.lose
+            newOutcome.unknown = worstChild.outcome.unknown
+        } else {
+            // Add the outcome for all children together
+            this.children.forEach(child => {
+                newOutcome.win = newOutcome.win + child.outcome.win
+                newOutcome.lose = newOutcome.lose + child.outcome.lose
+                newOutcome.unknown = newOutcome.unknown + child.outcome.unknown
+            })
+
+            // Average out all outcomes
+            newOutcome.win = newOutcome.win / this.children.length
+            newOutcome.lose = newOutcome.lose / this.children.length
+            newOutcome.unknown = newOutcome.unknown / this.children.length
+        }
 
         this.outcome = newOutcome
 
