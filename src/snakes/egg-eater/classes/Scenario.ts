@@ -1,7 +1,7 @@
 import crypto from 'crypto'
 import fastCartesian from 'fast-cartesian'
 
-import Snake from '@/classes/Snake'
+import Snake from './Snake'
 import { Point, Move } from '@/types'
 import isSamePoint from '@/utils/is-same-point'
 import isPointOnBoard from '@/utils/is-point-on-board'
@@ -304,7 +304,7 @@ class Scenario {
                 )
 
                 const currentSnake = snakes.find(s => s.id === id)
-                const newSnake = currentSnake.move(newHead, didEat)
+                const newSnake = currentSnake.move(newHead, didEat, isEating)
 
                 if (isEating) {
                     newSnake.health = 80

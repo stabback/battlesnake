@@ -13,12 +13,32 @@ class Snake implements SnakeData {
     readonly length: number
     readonly shout: string
 
+    public possibleNextHeadPositions: Point[] = []
+
     constructor(
         readonly data: SnakeData,
         readonly width: number,
-        readonly height: number
+        readonly height: number,
+        private ate: boolean = false
     ) {
         Object.assign(this, data)
+
+        this.possibleNextHeadPositions = moves
+            .map(move => applyMoveToPoint(this.head, move))
+            .filter(updatedHead => {
+                return isPointOnBoard(updatedHead, this.height, this.width)
+            })
+            .filter(updatedHead => {
+                const nextBody = [...this.body]
+
+                if (!this.ate) {
+                    nextBody.pop()
+                }
+
+                return !nextBody.some(segment =>
+                    isSamePoint(segment, updatedHead)
+                )
+            })
     }
 
     intersects(
@@ -42,25 +62,9 @@ class Snake implements SnakeData {
     }
 
     /**
-     * Returns a list of points that are both on the board and do not collide with itself
-     */
-    get possibleNextHeadPositions(): Point[] {
-        return moves
-            .map(move => applyMoveToPoint(this.head, move))
-            .filter(updatedHead => {
-                return isPointOnBoard(updatedHead, this.height, this.width)
-            })
-            .filter(updatedHead => {
-                return !this.body.some(segment =>
-                    isSamePoint(segment, updatedHead)
-                )
-            })
-    }
-
-    /**
      * Returns a new snake moved to the new point.  Does not modify this snake.
      */
-    move(point: Point, preserveTail = false): Snake {
+    move(point: Point, didEat = false, willEat = false): Snake {
         const newData: SnakeData = {
             id: this.id,
             name: this.name,
@@ -71,11 +75,11 @@ class Snake implements SnakeData {
             shout: this.shout
         }
 
-        if (!preserveTail) {
+        if (!didEat) {
             newData.body.pop()
         }
 
-        return new Snake(newData, this.width, this.height)
+        return new Snake(newData, this.width, this.height, willEat)
     }
 }
 
