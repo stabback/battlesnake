@@ -1,7 +1,9 @@
-import pressure from './pressure'
+import delay from './delay'
 import eat from './eat'
+import pressure from './pressure'
 
 export default {
-    pressure,
-    eat
+    delay,
+    eat,
+    pressure
 }

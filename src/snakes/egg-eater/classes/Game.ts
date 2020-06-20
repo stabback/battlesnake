@@ -10,7 +10,7 @@ import strategies from '../strategies'
 import chalk from 'chalk'
 
 const DEFAULT_NETWORK_LATENCY: number =
-    parseInt(process.env.DEFAULT_NETWORK_LATENCY, 10) || 50
+    parseInt(process.env.DEFAULT_NETWORK_LATENCY, 10) || 250
 
 type strategies = 'pressure' | 'feed' | 'survive'
 
@@ -182,6 +182,11 @@ class Game {
         ) {
             strategy = 'pressure'
             move = strategies.pressure(this.currentScenario)
+
+            if (!move) {
+                strategy = 'delay'
+                move = strategies.delay(this.currentScenario)
+            }
         }
 
         if (!move) {
