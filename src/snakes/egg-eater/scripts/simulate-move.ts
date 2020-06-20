@@ -18,17 +18,10 @@ import Controller from '../classes/Controller'
  */
 
 const art = `
-...........
-...........
-.....Bll..
-.......ul..
-........ul.
-.........u.
-....d..rdu@
-..@.rdruru.
-.....rrrrrd
-......dllll
-...@..A.@.@
+@...
+....
+..rA
+rru@
 `
 
 async function main() {
