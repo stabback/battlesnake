@@ -43,6 +43,26 @@ class Game {
         return this.timeout - this.latency
     }
 
+    public get riskTolerance() {
+        if (this.currentScenario.enemies.length === 1) {
+            return {
+                lose: 0.35
+            }
+        } else if (this.currentScenario.enemies.length === 2) {
+            return {
+                lose: 0.2
+            }
+        } else if (this.currentScenario.enemies.length === 3) {
+            return {
+                lose: 0.15
+            }
+        } else {
+            return {
+                lose: 0.1
+            }
+        }
+    }
+
     constructor(state: GameState) {
         // Store the base attributes that should be consistent for the life of the game
         this.id = state.game.id
@@ -156,7 +176,10 @@ class Game {
         // Resolve a move
         let move: Move = null
 
-        if (this.currentScenario.calculatedValues.playerIsDominant) {
+        if (
+            this.currentScenario.calculatedValues.playerIsDominant &&
+            this.currentScenario.player.health > 20
+        ) {
             strategy = 'pressure'
             move = strategies.pressure(this.currentScenario)
         }
@@ -188,6 +211,14 @@ class Game {
 
         log.push(['-- Our strategy recommends', move])
 
+        const winningMove = this.currentScenario.moveOdds.find(
+            m => m.winOdds >= 0.6
+        )
+        if (winningMove) {
+            log.push(['-- The simulator has a winning move!', winningMove])
+            move = winningMove.move
+        }
+
         // Validate our move against the simulator
         if (move && this.currentScenario.children) {
             log.push(['-- Simulator is running, comparing results'])
@@ -204,7 +235,7 @@ class Game {
                     strategy = 'simulator'
                     move = this.currentScenario.safestMove
                 }
-            } else if (outcome.lose > 0.3) {
+            } else if (outcome.lose > this.riskTolerance.lose) {
                 strategy = 'simulator'
                 log.push([chalk.bgRed('Simulator intercepting, too risky!')])
                 move = this.currentScenario.safestMove
