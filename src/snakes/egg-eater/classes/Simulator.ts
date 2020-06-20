@@ -89,7 +89,18 @@ class Simulator {
 
         // Always work with the first item, FIFO to perform a breadth-first search
         const scenario = this.workQueue.shift()
-        scenario.createChildren()
+
+        // If the parent only has one move, and that move is probably going to lead to death, don't explore this path further
+        if (
+            !(
+                scenario.parent &&
+                scenario.parent.possibleMoves.length === 1 &&
+                scenario.parent.outcome &&
+                scenario.parent.outcome.lose > 0.75
+            )
+        ) {
+            scenario.createChildren()
+        }
         if (scenario.children) {
             scenario.children.forEach(child => this.addWorkItem(child))
         }
