@@ -9,10 +9,8 @@ import isPointOnBoard from '@/utils/is-point-on-board'
 import strategies from '../strategies'
 import chalk from 'chalk'
 
-const DEFAULT_NETWORK_LATENCY: number = parseInt(
-    process.env.DEFAULT_NETWORK_LATENCY,
-    10
-)
+const DEFAULT_NETWORK_LATENCY: number =
+    parseInt(process.env.DEFAULT_NETWORK_LATENCY, 10) || 50
 
 type strategies = 'pressure' | 'feed' | 'survive'
 

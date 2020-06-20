@@ -55,7 +55,7 @@ class Simulator {
     public runSimulator() {
         if (!this.isRunning) {
             this.isRunning = true
-            this.workLoop()
+            setImmediate(() => this.workLoop())
         }
     }
 
@@ -65,7 +65,7 @@ class Simulator {
     public workLoop() {
         if (this.isRunning) {
             this.doWork()
-            setTimeout(() => this.workLoop(), 1)
+            setImmediate(() => this.workLoop())
         }
     }
 
@@ -190,6 +190,7 @@ class Simulator {
      * Handle teardown and notifying subscribers when there is no more work to do
      */
     private workDone() {
+        console.log('Work is done!')
         this.isRunning = false
         this.callbacks.forEach(callback => callback())
     }

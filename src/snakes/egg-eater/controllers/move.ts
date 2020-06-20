@@ -3,8 +3,6 @@ import { MoveResponse, GameState, Move } from '@/types'
 import Game from '../classes/Game'
 import Controller from '../classes/Controller'
 
-const NETWORK_BUFFER = 250
-
 async function move(
     request: Request<{}, MoveResponse, GameState>,
     response: Response<MoveResponse>
