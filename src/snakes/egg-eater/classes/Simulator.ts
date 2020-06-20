@@ -3,7 +3,7 @@ import Controller from './Controller'
 import chalk from 'chalk'
 
 /** Maximum distance in the future to attempt to resolve scenarios */
-const MAX_AGE = 7
+const MAX_AGE = parseInt(process.env.MAX_SIMULATION_AGE, 10) || 7
 
 /**
  * Maximum amount of time to run Oracle since the last time the base scenario was switched.

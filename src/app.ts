@@ -16,8 +16,6 @@ import snakes from '@/snakes'
 import logs from '@/logger'
 import path from 'path'
 
-import prettyBytes from 'pretty-bytes'
-
 dotenv.config()
 
 const PORT = process.env.PORT || 3000
